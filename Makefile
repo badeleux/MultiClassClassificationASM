@@ -3,7 +3,7 @@ CFLAGS=-Wall -g -O0 -m32
 LDFLAGS= -Wl,-m,elf_i386,-larmadillo,-lstdc++,-ldl,-lm
 SOURCES=Image.cpp main.cpp MultiClassClassificator.cpp 
 SOURCESASM = MultiClassClassificator.asm
-OBJECTSASM=$(SOURCES:.asm=.o)
+OBJECTSASM=$(SOURCESASM:.asm=.o)
 EXECUTABLE=Predict
 LIBRARY=libclass.so
 
