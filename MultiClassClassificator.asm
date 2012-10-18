@@ -1,8 +1,6 @@
 section	.text
 extern	_GLOBAL_OFFSET_TABLE_	; zewnętrzny, uzupełniony przez linker
-global	info:function		; eksportowana funkcja
-;extern	printf			; funkcja zewnętrzna
-
+global	trainThetaMatrix:function
 ; makro do pobierania adresu GOT; wynik w EBX.
 %imacro	wez_GOT	0
 
@@ -12,38 +10,102 @@ global	info:function		; eksportowana funkcja
 	add	ebx, _GLOBAL_OFFSET_TABLE_ + $$ - %%zaraz wrt ..gotpc
 %endmacro
 
-info:
+;makro do liczenia potegi pierwszy parametr podstawa wykladnik to ecx drugi parametr to gdzie zapisac
+%macro power 2	
+	finit ;inicjalizacja
+
+	cmp ecx, 0
+	je koniec_przy_zerze
+			jnl dodatni
+
+
+	neg ecx ;jesli wykladnik jest ujemny zmien znak
+	dec ecx
+	FLD1
+	FDIV dword [%1]
+	cmp ecx, 0
+	je koniec
+	FLD1
+	FDIV dword [%1]
+	jmp petla
+dodatni:
+	dec ecx
+	FLD dword [%1]
+	cmp ecx, 0
+	je koniec
+	FLD dword [%1]
+petla:
+	FMUL st0, st1
+		loop petla
+	jmp koniec
+koniec_przy_zerze:
+	mov [%2], dword 1
+koniec:
+	fstp dword [%2]                                                                                                                                                                                                                                          
+%endmacro
+
+;makro rezerwujace pamiec w pierwszym parametrze przekazujemy ile elementow tablicy dword chcemy
+;drugi parametr to miejsce gdzie zapisac adres do poczatku tablicy
+%macro zarezerwujPamiec 2
+	lea eax, [esp-4]
+	mov [%2], eax
+	mov eax, %1
+	mov ebx, 4
+	mul ebx
+	neg eax
+	lea esp, [esp + eax]
+%endmacro
+
+;funkcja do liczenia funkcji sigmoid 
+;pierwszy parametr to adres pierwszego elementu tablicy w ecx liczba elementow [esp + 8]
+;drugi parametr to adres do pierwszego eleemntu nowej macierzy [esp+12]
+;trzeci par to adres do liczby eulera [esp+16]
+;czwarty par to adres do tempa [esp + 20]
+sigmoidfunction:
 	push ebp
 	mov ebp, esp
 
-	mov edx, [ebp + 8]
-	mov eax, [edx]
-	wez_GOT			; pobieramy adres GOT
-	push	ebx		; zachowujemy EBX
+	;lea [%2], [esp-4]
+	petla:
+		push ecx ;schowanie ecx
+	;	mov ecx, [%1]
+		NEG ecx
+	;	power [%3], [%4] ; w 4 mamy policzone e^-z(?)
+		pop ecx ;odzyskanie ecx
+	;	mov eax, [%4];tutaj wsadzamy element do tablicy
+	loop petla
+	
+	mov esp, ebp
+	pop ebp
+	
+	ret
 
-	mov	eax, 4		; funkcja pisania do pliku
-			; do ECX załaduj ADRES napisu (stad LEA a nie MOV)
-	lea	ecx, [ebx + napis wrt ..gotoff]
-	mov	ebx, 1		; plik = 1 = standardowe wyjście (ekran)
-	mov	edx, napis_dl	; długość napisu
-	int	80h		; wyświetl
+;pierwszy parametr to wskaznik na tablice X [esp + 8]
+;drugi parametr to liczba wierszy w tablicy X [esp + 12]
+;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
+;czwarty parametr to wskaznik na tablice Y [esp + 20]
+;piaty parametr to liczba elementow wektora Y [esp + 24]
+trainThetaMatrix:
+	;prolog
+	push ebp
+	mov ebp, esp
+	
 
-; a tak uruchamiamy funkcje zewnętrzne:
-	pop	ebx		; przywracamy EBX
-	lea	ecx, [ebx + napis wrt ..gotoff]	; ECX = adres napisu
-	push	ecx		; adres na stos (jak dla funkcji z C)
-;	call	printf wrt ..plt	; uruchomienie funkcji
-	add	esp, 4		; usunięcie argumentów ze stosu
+	wez_GOT
+	lea ebx, [ebx + EULER_NUMBER wrt ..gotoff]
+	lea edx, [ebx + temp wrt ..gotoff]
 
-				; przywracanie rejestrów
-	pop	edx
-	pop	ecx
-	pop	ebx
-	pop	eax
+	mov eax, [esp+12]
+	mul dword [esp + 16]
+	zarezerwujPamiec eax, edx 
 
+;epilog:
+	mov esp, ebp
+	pop ebp
 	xor	eax, eax	; funkcja zwraca 0 jako brak błędu
 	ret
-section .data
 
-napis		db "jakas funkcja z dynamicznej biblioteki", 10, 0
-napis_dl	equ	$ - napis
+section .data
+EULER_NUMBER dd 0x402DF854
+numberTwo db 2
+temp dd 0

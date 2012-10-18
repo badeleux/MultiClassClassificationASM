@@ -15,14 +15,31 @@
 #include "MultiClassClassificator.h"
 
 //params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class, lambda
-typedef unsigned int (*trainThetaMatrix)(int*, int, int, int*, int, int, double);
+typedef unsigned int (*trainThetaMatrix)(int*, int, int, int*, int, int, int);
 
+int* convertArmadilloMatrixToNormalArray(Mat<int> matrix);
+
+int* convertArmadilloMatrixToNormalArray(Mat<int> matrix)
+{
+	//creating matrix
+	int *array = new int[matrix.n_rows * matrix.n_cols];
+	//filling array
+	for (int i = 0 ; i < matrix.n_rows ; i++)
+	{
+		for (int j = 0 ; j < matrix.n_cols ; j++)
+		{
+			array[j + i*matrix.n_cols] = matrix(i,j);
+		}
+	}
+	
+	return array;
+
+}
 
 int main(int argc, const char * argv[])
 {
     void *handle;
 	char *error;
-	trainThetaMatrix *trainFunc;
 	 
 	
     // insert code here...
@@ -40,7 +57,7 @@ int main(int argc, const char * argv[])
 	
     
     mat X, y;
-    X.load("./X.dat", raw_ascii);
+    X.load("./Y.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
     int M, N, Q; // rows, cols, grayscale
     int val;
@@ -54,15 +71,22 @@ int main(int argc, const char * argv[])
 	// read image
     Image::readImage("./seven.PGM", image);
 
+
     mat imagePixelMatrix = image.getPixelMatrix();
-    imagePixelMatrix = join_rows(ones(1,1), imagePixelMatrix);
+imagePixelMatrix = join_rows(ones(1,1), X.row(2256));
 
 
     MultiClassClassificator classificator = MultiClassClassificator();
     classificator.trainThetaMatrix(X, y, 10, 23);
+//    classificator.predictUsingThetaMatrix(imagePixelMatrix);
+	Mat<int> testX;
+	testX << 69 << 69 << endr << 23 << 65 << endr;
 
-    classificator.predictUsingThetaMatrix(imagePixelMatrix);
-    
+	std::cout << testX;
+	int *array = convertArmadilloMatrixToNormalArray(testX);
+
+
+ trainFunction(array, 3,3,array,10,0x69,0x123);
     
     
     

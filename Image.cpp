@@ -458,12 +458,9 @@ void Image::scaleIntensity()
 {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < M; j++) {
-            pixelVal[i][j] -= Q/2;
-            pixelVal[i][j] *= (1.1277)/(Q/2);
-            pixelVal[i][j] = -pixelVal[i][j];
-        }
+        	pixelVal[i][j] = 255 - pixelVal[i][j];
+		}
     }
-    Q = 1.1277;
 }
 
 
