@@ -15,14 +15,14 @@
 #include "MultiClassClassificator.h"
 
 //params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class, lambda
-typedef unsigned int (*trainThetaMatrix)(int*, int, int, int*, int, int, int);
+typedef unsigned int (*trainThetaMatrix)(float*, int, int, float*, int, float, float*);
 
-int* convertArmadilloMatrixToNormalArray(Mat<int> matrix);
+float* convertArmadilloMatrixToNormalArray(fmat matrix);
 
-int* convertArmadilloMatrixToNormalArray(Mat<int> matrix)
+float* convertArmadilloMatrixToNormalArray(fmat matrix)
 {
 	//creating matrix
-	int *array = new int[matrix.n_rows * matrix.n_cols];
+	float *array = new float[matrix.n_rows * matrix.n_cols];
 	//filling array
 	for (int i = 0 ; i < matrix.n_rows ; i++)
 	{
@@ -56,9 +56,14 @@ int main(int argc, const char * argv[])
 	}
 	
     
-    mat X, y;
+    fmat X, y;
     X.load("./Y.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
+	
+	//add bias unit
+	fmat one_vector = ones<fmat>(X.n_rows,1);
+	X = join_rows(one_vector,X);
+
     int M, N, Q; // rows, cols, grayscale
     int val;
     bool type;
@@ -72,31 +77,32 @@ int main(int argc, const char * argv[])
     Image::readImage("./seven.PGM", image);
 
 
-    mat imagePixelMatrix = image.getPixelMatrix();
-imagePixelMatrix = join_rows(ones(1,1), X.row(2256));
+    fmat imagePixelMatrix = image.getPixelMatrix();
+	imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
 
+
+	fmat allTheta = zeros<fmat>(10, X.n_cols);
 
     MultiClassClassificator classificator = MultiClassClassificator();
-    classificator.trainThetaMatrix(X, y, 10, 23);
+classificator.trainThetaMatrix(X, y, 10, 23, allTheta);
 //    classificator.predictUsingThetaMatrix(imagePixelMatrix);
-	Mat<int> testX;
+
+	fmat testX;
 	testX << 2 << 3 << endr << 4 << 5 << endr;
 
-	int *array = convertArmadilloMatrixToNormalArray(testX);
+	float *array = convertArmadilloMatrixToNormalArray(testX);
+	float *allThetaArray = convertArmadilloMatrixToNormalArray(allTheta);
+ 
+trainFunction(array, 3,3,array,10,1.0f, allThetaArray);
 
-	std::cout << "Przed";
-   for (int i = 0 ; i < 4 ; i++)
-		std::cout << array[i] << " "; 
- trainFunction(array, 3,3,array,10,0x69,0x123);
-
-std::cout << "Po: ";
-   for (int i = 0 ; i < 4 ; i++)
-		std::cout << array[i] << " "; 
     
    fflush(stdout); 
     
    dlclose(handle); 
-    
+   
+	delete[] array;
+	delete[] allThetaArray;
+ 
     return 0;
 }
 

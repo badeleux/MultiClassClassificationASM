@@ -18,16 +18,16 @@ class MultiClassClassificator {
     
 private:
     //Variables
-    mat allTheta;
+    fmat allTheta;
     int numLabels;
     //Methods
-    mat trainThetaVector(mat initialTheta, mat X, mat y, int numOfIterations, double lambda);
-    mat sigmoidFunction(mat z);
-    double costFunction(mat theta, mat X, mat y, double lambda);
+    fmat trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations, double lambda);
+    fmat sigmoidFunction(fmat z);
+    double costFunction(fmat theta, fmat X, fmat y, double lambda);
 public:
     
-    mat trainThetaMatrix(mat X, mat y, int num_labels, double lambda);
-    int predictUsingThetaMatrix(mat X);
+    fmat trainThetaMatrix(fmat X, fmat y, int num_labels, double lambda, fmat&);
+    int predictUsingThetaMatrix(fmat X);
 };
 
 #endif

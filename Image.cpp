@@ -107,9 +107,9 @@ int Image::getPixelVal(int row, int col)
     return pixelVal[row][col];
 }
 
-mat Image::getPixelMatrix()
+fmat Image::getPixelMatrix()
 {
-    mat pixelMatrix = zeros(1, N*M);
+    fmat pixelMatrix = zeros<fmat>(1, N*M);
     for (int i = 0; i < N; i++) {
         for (int j = 0; j<M; j++) {
             pixelMatrix(j*(i+1)) = pixelVal[i][j];

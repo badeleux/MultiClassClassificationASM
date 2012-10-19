@@ -89,8 +89,11 @@ sigmoidfunction:
 	petla1:
 		push ecx
 		mov ebx, [esp + 28] ;w ebx adres do macierzy X
-		mov ecx, [ebx + esi] ; w ecx element tablicy
-		NEG ecx ; -z
+		finit
+		fld dword [ebx + esi] ; w ecx element tablicy
+		fchs ; -z
+		fist dword [ebx + esi]
+		mov ecx, [ebx + esi]
 		mov edx, [esp + 36] ; w edx adres do e
 		mov ebx, [esp + 32] ; ebx adres do drugiej tablicy
 		lea eax, [ebx + esi]; w eax adres do elementu nowej tablicy
@@ -131,33 +134,22 @@ sigmoidfunction:
 ;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
 ;czwarty parametr to wskaznik na tablice Y [esp + 20]
 ;piaty parametr to liczba elementow wektora Y [esp + 24]
+;szosty par. to lambda [esp + 28]
+;siodmy par. to wskaznik do allTheta (wyjsciowa tablica) [esp + 32]
 trainThetaMatrix:
 	;prolog
 	push ebp
 	mov ebp, esp
-	
-	;inicjalizacja zmiennych
-	wez_GOT ;pobranie adresu got do ebx
-	
-	lea edx, [ebx + ptr_to_X wrt ..gotoff]
-	mov eax, [esp + 8]
-	mov [edx], eax
 		
-	lea edx, [ebx + X_row wrt ..gotoff]
-	mov eax, [esp + 12]
-	mov [edx], eax
-
-	lea edx, [ebx + X_col wrt ..gotoff]
-	mov eax, [esp + 16]
-	mov [edx], eax
+	wez_GOT ;pobranie adresu got do ebx
 	
 	mov eax, [esp+12]
 	mul dword [esp + 16]
 	mov ecx, eax
 	zarezerwujPamiec eax  
-	
-	wez_GOT
-	mov eax, [ebx + ptr_to_X wrt ..gotoff]
+
+	wez_GOT	
+	mov eax, [ebp + 8]
 	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
 	
 	push dword edx
@@ -174,10 +166,5 @@ trainThetaMatrix:
 
 section .data
 	EULER_NUMBER dd 0x402DF854
-	ptr_to_X dd 0
-	X_row dd 0
-	X_col dd 0
-	ptr_to_Y dd 0
-	Y_row dd 0
 
 	

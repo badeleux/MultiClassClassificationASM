@@ -23,7 +23,7 @@ public:
     void setImageInfo(int numRows, int numCols, int maxVal);
     void getImageInfo(int &numRows, int &numCols, int &maxVal);
     int getPixelVal(int row, int col);
-    mat getPixelMatrix();
+    fmat getPixelMatrix();
     void setPixelVal(int row, int col, int value);
     bool inBounds(int row, int col);
     void getSubImage(int upperLeftRow, int upperLeftCol, 
