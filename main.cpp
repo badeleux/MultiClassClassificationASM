@@ -80,16 +80,20 @@ imagePixelMatrix = join_rows(ones(1,1), X.row(2256));
     classificator.trainThetaMatrix(X, y, 10, 23);
 //    classificator.predictUsingThetaMatrix(imagePixelMatrix);
 	Mat<int> testX;
-	testX << 69 << 69 << endr << 23 << 65 << endr;
+	testX << 2 << 3 << endr << 4 << 5 << endr;
 
-	std::cout << testX;
 	int *array = convertArmadilloMatrixToNormalArray(testX);
 
-
+	std::cout << "Przed";
+   for (int i = 0 ; i < 4 ; i++)
+		std::cout << array[i] << " "; 
  trainFunction(array, 3,3,array,10,0x69,0x123);
+
+std::cout << "Po: ";
+   for (int i = 0 ; i < 4 ; i++)
+		std::cout << array[i] << " "; 
     
-    
-    
+   fflush(stdout); 
     
    dlclose(handle); 
     

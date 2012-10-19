@@ -11,70 +11,116 @@ global	trainThetaMatrix:function
 %endmacro
 
 ;makro do liczenia potegi pierwszy parametr podstawa wykladnik to ecx drugi parametr to gdzie zapisac
-%macro power 2	
+;pierwszy parametr to adres do podstawa [esp + 8]
+;drugi par to adres do zmiennej [esp + 12]
+powerFunction:	
+	push ebp
+	mov ebp, esp
+	push ecx
+	push eax
+	push ebx
 	finit ;inicjalizacja
+
+	mov eax, [esp +20] 
+	mov ebx, [esp + 24]
+
 
 	cmp ecx, 0
 	je koniec_przy_zerze
-			jnl dodatni
+	jnl dodatni
 
-
+	
 	neg ecx ;jesli wykladnik jest ujemny zmien znak
 	dec ecx
 	FLD1
-	FDIV dword [%1]
+	FDIV dword [eax]
 	cmp ecx, 0
 	je koniec
 	FLD1
-	FDIV dword [%1]
+	FDIV dword [eax]
 	jmp petla
 dodatni:
 	dec ecx
-	FLD dword [%1]
+	FLD dword [eax]
 	cmp ecx, 0
 	je koniec
-	FLD dword [%1]
+	FLD dword [eax]
 petla:
 	FMUL st0, st1
 		loop petla
 	jmp koniec
 koniec_przy_zerze:
-	mov [%2], dword 1
+	fld1 
 koniec:
-	fstp dword [%2]                                                                                                                                                                                                                                          
-%endmacro
+	fstp dword [ebx]  
+	
+;;;;;;;;;;;epilog:
+	pop ebx
+	pop eax
+	pop ecx     
+	mov esp, ebp
+	pop ebp                    
+	ret                                                                                                                                                                                                               
 
 ;makro rezerwujace pamiec w pierwszym parametrze przekazujemy ile elementow tablicy dword chcemy
-;drugi parametr to miejsce gdzie zapisac adres do poczatku tablicy
-%macro zarezerwujPamiec 2
-	lea eax, [esp-4]
-	mov [%2], eax
+;drugi parametr to miejsce gdzie zapisac adres do tablicy
+%macro zarezerwujPamiec 1
 	mov eax, %1
 	mov ebx, 4
 	mul ebx
 	neg eax
-	lea esp, [esp + eax]
+	add esp, eax
 %endmacro
 
 ;funkcja do liczenia funkcji sigmoid 
-;pierwszy parametr to adres pierwszego elementu tablicy w ecx liczba elementow [esp + 8]
-;drugi parametr to adres do pierwszego eleemntu nowej macierzy [esp+12]
+;pierwszy parametr to tablica z (w ecx liczba elementow) [esp + 8]
+;drugi parametr to adres do nowej macierzy [esp+12]
 ;trzeci par to adres do liczby eulera [esp+16]
-;czwarty par to adres do tempa [esp + 20]
 sigmoidfunction:
+;;;;;;;;;;;;;;;epilog:
 	push ebp
 	mov ebp, esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+;;;;;;;;;;;;;;;;;
+	mov esi,0
+	petla1:
+		push ecx
+		mov ebx, [esp + 28] ;w ebx adres do macierzy X
+		mov ecx, [ebx + esi] ; w ecx element tablicy
+		NEG ecx ; -z
+		mov edx, [esp + 36] ; w edx adres do e
+		mov ebx, [esp + 32] ; ebx adres do drugiej tablicy
+		lea eax, [ebx + esi]; w eax adres do elementu nowej tablicy
+		
+;funkcja potegowa:
+		push eax		
+		push edx
+		call powerFunction ; mamy policzone e^-z(?)
+		pop edx
+		pop eax
 
-	;lea [%2], [esp-4]
-	petla:
-		push ecx ;schowanie ecx
-	;	mov ecx, [%1]
-		NEG ecx
-	;	power [%3], [%4] ; w 4 mamy policzone e^-z(?)
-		pop ecx ;odzyskanie ecx
-	;	mov eax, [%4];tutaj wsadzamy element do tablicy
-	loop petla
+		finit
+		fld dword [eax] ;ladujemy e^-z
+		fld1 ; ladujemy stala 1
+		fadd st0, st1 ; 1+ e^-z
+		fld1 ; ladujemy stala 1
+		fdiv st0, st1 ; 1/(1-e^-z)
+		fstp dword  [eax]
+		
+		pop ecx
+
+		add esi, 4
+	loop petla1
 	
+
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+
 	mov esp, ebp
 	pop ebp
 	
@@ -90,14 +136,35 @@ trainThetaMatrix:
 	push ebp
 	mov ebp, esp
 	
+	;inicjalizacja zmiennych
+	wez_GOT ;pobranie adresu got do ebx
+	
+	lea edx, [ebx + ptr_to_X wrt ..gotoff]
+	mov eax, [esp + 8]
+	mov [edx], eax
+		
+	lea edx, [ebx + X_row wrt ..gotoff]
+	mov eax, [esp + 12]
+	mov [edx], eax
 
-	wez_GOT
-	lea ebx, [ebx + EULER_NUMBER wrt ..gotoff]
-	lea edx, [ebx + temp wrt ..gotoff]
-
+	lea edx, [ebx + X_col wrt ..gotoff]
+	mov eax, [esp + 16]
+	mov [edx], eax
+	
 	mov eax, [esp+12]
 	mul dword [esp + 16]
-	zarezerwujPamiec eax, edx 
+	mov ecx, eax
+	zarezerwujPamiec eax  
+	
+	wez_GOT
+	mov eax, [ebx + ptr_to_X wrt ..gotoff]
+	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
+	
+	push dword edx
+	push dword eax
+	push dword eax
+	call sigmoidfunction
+	mov eax, [eax]
 
 ;epilog:
 	mov esp, ebp
@@ -106,6 +173,11 @@ trainThetaMatrix:
 	ret
 
 section .data
-EULER_NUMBER dd 0x402DF854
-numberTwo db 2
-temp dd 0
+	EULER_NUMBER dd 0x402DF854
+	ptr_to_X dd 0
+	X_row dd 0
+	X_col dd 0
+	ptr_to_Y dd 0
+	Y_row dd 0
+
+	
