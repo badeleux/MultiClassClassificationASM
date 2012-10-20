@@ -30,9 +30,7 @@ fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y
     int m = y.n_elem;
     for (int i = 0; i < numOfIterations; i++) {
 //        costFunction(initialTheta.t(), X, y, 0);
-        fmat regularizationTerm = initialTheta;
-        regularizationTerm(0) = 0;
-        initialTheta -= ((sigmoidFunction(X*initialTheta.t()) - y).t()*X)/m + lambda*regularizationTerm/m;
+        initialTheta -= ((sigmoidFunction(X*initialTheta.t()) - y).t()*X)/m;
     }
     return initialTheta;
 }

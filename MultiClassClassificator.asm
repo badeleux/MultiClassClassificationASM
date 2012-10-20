@@ -129,6 +129,70 @@ sigmoidfunction:
 	
 	ret
 
+;funkcja transponujaca macierz
+;ebp+8 adres do pierwszego elementu tablicy gdzie zapisac nowa macierz
+;ebp+12 adres do pierwszego element tablicy do transponowania
+;ebp+16 liczba wierszy
+;ebp+20 liczba kolumn
+transposeMatrix:
+	push ebp
+	mov ebp, esp
+	push ebx
+	push esi
+	push edi
+	push ecx
+	push eax
+	push edx
+	
+	mov eax, dword[ebp+20]
+
+	mov ebx, 4
+	mul ebx ; liczba kolumn w bajtach
+	mov edx, dword[ebp+20]
+	mov ecx, dword[ebp + 16]; w ecx liczba wierszy
+	mov esi, dword[ebp + 12] ;adres do pierwszy element starej macierzy
+	mov edi, dword[ebp + 8]; adres do pierwszy element nowej macierzy
+	xor ebx, ebx
+	
+	copyColumn:
+		cld
+		push eax
+		mov eax, [esi]
+		mov [edi], eax
+		pop eax		
+		add esi, eax 
+		add edi, 4
+		loop copyColumn	
+;go to next column
+		dec edx ;w edx jest licznik ile jeszcze pozostalo kolumn
+		je return ;jestli 0 to koncz
+		inc ebx ;ebx licznik w druga strone o ile przesunac esi
+		push eax ; schowac eax
+		mov eax, ebx
+		mov ecx, 4
+		push edx ; trzeba schowac wartosc z edx, gdyz wynik mnozenia zapisywany jest w EDX:EAX
+		mul ecx
+		pop edx
+		mov esi, [ebp + 12] 
+		add esi, eax
+		mov ecx, [esi]
+		pop eax ; odzyskaj eax
+
+		mov ecx, [ebp+16]
+		
+		jmp copyColumn
+		
+	return:
+		pop edx
+		pop eax
+		pop ecx
+		pop edi
+		pop esi
+		pop ebx
+		mov esp, ebp
+		pop ebp
+		ret
+
 ;pierwszy parametr to wskaznik na tablice X [esp + 8]
 ;drugi parametr to liczba wierszy w tablicy X [esp + 12]
 ;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
@@ -147,16 +211,40 @@ trainThetaMatrix:
 	mul dword [esp + 16]
 	mov ecx, eax
 	zarezerwujPamiec eax  
-
-	wez_GOT	
-	mov eax, [ebp + 8]
-	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
+	mov eax, esp
 	
-	push dword edx
-	push dword eax
-	push dword eax
-	call sigmoidfunction
-	mov eax, [eax]
+	push dword[ebp + 16]
+	push dword[ebp + 12]
+	push dword[ebp + 8]
+	push eax
+	call transposeMatrix
+	mov ebx, [eax + 4]
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	wez_GOT	
+	mov ecx, [ebp + 24]
+	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
+
+	petla_liczba_klas: ;lecimy od 10->0 
+		push ecx
+		mov ecx, [ebp + 12] ; do ecx laduje liczba elementow Y 
+		petla_Y:
+			push ecx
+			mov ecx, dword 50 ; liczba iteracji ustawiona na sztywno
+			petla_iteracje:
+				push ecx
+
+				pop ecx
+			loop petla_iteracje
+			pop ecx
+		loop petla_Y	
+		pop ecx
+	loop petla_liczba_klas
+	
+;	push dword edx
+;	push dword eax
+;	push dword eax
+;	call sigmoidfunction
+;	mov eax, [eax]
 
 ;epilog:
 	mov esp, ebp
