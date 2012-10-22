@@ -21,8 +21,8 @@ powerFunction:
 	push ebx
 	finit ;inicjalizacja
 
-	mov eax, [esp +20] 
-	mov ebx, [esp + 24]
+	mov eax, [esp +20] ; do eax adres do podstawy 
+	mov ebx, [esp + 24] ; do ebx adres do zmiennej gdzie wrzucic wynik
 
 
 	cmp ecx, 0
@@ -193,6 +193,133 @@ transposeMatrix:
 		pop ebp
 		ret
 
+;mnozenie Z = X * Y gdzie X jest macierza (n x m), a Y jest macierza (l x m)
+;pierwszy par - wskaznik do tablicy X [ebp + 8] 
+;drugi par - wskaznik do tablicy Y [ebp + 12]
+;trzeci par - wskaznik do tablicy Z [ebp + 16]
+;czwarty par - n - liczba wierszy X [ebp + 20]
+;piaty par - m liczba kolumn X [ebp + 24 ]
+;szosty par - l liczba wierszy Y [ebp + 28]
+multiplyMatrices:
+	push ebp
+	mov ebp, esp
+	push dword [ebp + 20] ; pamiec na licznik petli
+	push eax
+	push ebx
+	push ecx
+	push edx
+;;;;;;;;;;;;;;;;;;;;
+	mov esi, [ebp + 8]
+	mov edi, [ebp + 12]
+
+	mov ecx, [ebp + 24]
+	mov ebx, ecx
+	and ebx, 31 ;reszta z dzielenia przez 32 
+	shr ecx, 5 ; ile mozemy wykonac petli pobierajac po 32 liczby
+	
+	push ebx
+	push ecx
+	
+	lea esp, [esp-20] ; alokacja pamieci na 4 liczby float i wynik ich dodawania
+	mov [esp+16], dword 0
+	petlaMnozenia1:
+		movups xmm0, [esi]
+		movups xmm1, [edi]
+		movups xmm2, [esi+16]
+		movups xmm3, [edi+16]
+		movups xmm4, [esi+32]
+		movups xmm5, [edi+32]
+		movups xmm6, [esi+48]
+		movups xmm7, [edi+48]
+		
+		mulps xmm0, xmm1
+		mulps xmm2, xmm3
+		mulps xmm4, xmm5
+		mulps xmm6, xmm7
+		
+		addps xmm0, xmm2
+		addps xmm4, xmm6
+		addps xmm0, xmm4		
+
+		movups [esp], xmm0 ;wrzucono 4 liczby do pamieci, teraz je nalezy zsumowac
+		movss xmm0, [esp]
+		movss xmm1, [esp+4]
+		movss xmm2, [esp+8]
+		movss xmm3, [esp+12]
+		movss xmm4, [esp+16]
+
+		addss xmm0, xmm1
+		addss xmm2, xmm3
+		addss xmm0, xmm2
+		addss xmm0, xmm4
+
+		movss [esp+16], xmm0 ; pod esp+16 jest suma zsumowanym do tej pory komorek
+	
+
+		add esi, 64
+		add edi, 64
+		loop petlaMnozenia1
+
+	mov ecx, ebx
+	petlaMnozenia2:
+		movss xmm0, [esi]
+		movss xmm1, [edi]
+		movss xmm2, [esp+16]
+		mulss xmm0, xmm1
+		addss xmm0,xmm2
+		movss [esp+16], xmm0
+		
+		add esi, 4
+		add edi, 4
+		loop petlaMnozenia2
+	next_rowY:
+		mov eax, [ebp + 16]
+		mov edx, [esp+16]
+		mov [eax], edx ; zapisanie liczby do nowej tablicy
+		add eax, 4
+		mov [ebp + 16], eax ; zapisujemy wskaznik na kolejny element tablicy
+		
+		lea esp, [esp + 20] ; kasujemy zaalokowana tablice
+		pop ecx
+		pop ebx
+
+		mov eax, [ebp + 28] ; do eax liczba wierszy macierzy Y
+		dec eax
+		je next_rowX ; jesli macierz Y mnozylo teraz ostatni wiersz to przejdz do nastepnego wiersza macierzy X
+
+		mov esi, [ebp + 8]
+		jmp petlaMnozenia1
+
+	next_rowX:
+		mov eax, [ebp-4] ; w eax ile jeszcze kolumn pozostalo
+		dec eax
+		mov [ebp-4], eax
+		je koniecMnozenia
+
+		mov edi, [ebp + 12] ; macierz Y zaczynamy od poczatku
+		mov eax, [ebp + 24] ; liczba kolumn macierzy X
+		mov edx, dword 4		
+		mul edx
+		mov edx, [ebp + 8] ; w eax znajduje sie wskaznik na kolejny wiersz
+		add eax, edx
+		mov esi, eax ; wskaznik na pierwszy element kolejnego wiersza wedruje do esi
+		mov [ebp+8], esi ;zapisujemy wskaznik do pamieci
+			
+
+
+	koniecMnozenia:
+;;;;;;;;;;;;;;;;;;;;
+		pop edx
+		pop ecx
+		pop ebx
+		pop eax
+		lea esp, [esp + 4] ; dealokacja pamieci dla zmiennych lokalnych
+		mov esp, ebp
+		pop ebp
+	ret
+
+
+
 ;pierwszy parametr to wskaznik na tablice X [esp + 8]
 ;drugi parametr to liczba wierszy w tablicy X [esp + 12]
 ;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
@@ -206,13 +333,15 @@ trainThetaMatrix:
 	mov ebp, esp
 		
 	wez_GOT ;pobranie adresu got do ebx
-	
-	mov eax, [esp+12]
-	mul dword [esp + 16]
-	mov ecx, eax
+
+	;przyklad rezerwacji pamieci	
+	mov eax, [esp+12] ; do eax liczba wierszy
+	mul dword [esp + 16] ; mnozymy razy liczbe kolumn
+	mov ecx, eax ; do ecx liczba elementow do zaalokowania
 	zarezerwujPamiec eax  
 	mov eax, esp
 	
+	;przyklad transponowania macierzy
 	push dword[ebp + 16]
 	push dword[ebp + 12]
 	push dword[ebp + 8]
@@ -220,6 +349,8 @@ trainThetaMatrix:
 	call transposeMatrix
 	mov ebx, [eax + 4]
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 	wez_GOT	
 	mov ecx, [ebp + 24]
 	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
@@ -239,7 +370,8 @@ trainThetaMatrix:
 		loop petla_Y	
 		pop ecx
 	loop petla_liczba_klas
-	
+
+;przyklad liczenia sigmoid function	
 ;	push dword edx
 ;	push dword eax
 ;	push dword eax
@@ -254,5 +386,5 @@ trainThetaMatrix:
 
 section .data
 	EULER_NUMBER dd 0x402DF854
-
+	QWORDTEST dq 0
 	

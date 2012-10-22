@@ -86,7 +86,7 @@ int main(int argc, const char * argv[])
     MultiClassClassificator classificator = MultiClassClassificator();
 classificator.trainThetaMatrix(X, y, 10, 23, allTheta);
     
-classificator.predictUsingThetaMatrix(X.row(0));
+classificator.predictUsingThetaMatrix(X.row(2566));
 
 	fmat testX;
 	testX << 2 << 3 << endr << 4 << 5 << endr;
@@ -98,7 +98,7 @@ classificator.predictUsingThetaMatrix(X.row(0));
 
 	for (int i = 0 ; i < 4 ; i++)
 		std::cout << array[i] << " ";
-trainFunction(array,2,2,array,10,1.0f, allThetaArray);
+//trainFunction(array,2,2,array,10,1.0f, allThetaArray);
 	std::cout << "Po: "<< endl;
 	
 	for (int i = 0 ; i < 4 ; i++)
