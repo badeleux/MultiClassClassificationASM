@@ -204,24 +204,31 @@ multiplyMatrices:
 	push ebp
 	mov ebp, esp
 	push dword [ebp + 20] ; pamiec na licznik petli
+	push dword [ebp + 28]
 	push eax
 	push ebx
 	push ecx
 	push edx
 ;;;;;;;;;;;;;;;;;;;;
+
 	mov esi, [ebp + 8]
 	mov edi, [ebp + 12]
 
 	mov ecx, [ebp + 24]
 	mov ebx, ecx
-	and ebx, 31 ;reszta z dzielenia przez 32 
-	shr ecx, 5 ; ile mozemy wykonac petli pobierajac po 32 liczby
-	
+	and ebx, 15;reszta z dzielenia przez 32 
+	shr ecx, 4 ; ile mozemy wykonac petli pobierajac po 32 liczby
+
 	push ebx
 	push ecx
 	
 	lea esp, [esp-20] ; alokacja pamieci na 4 liczby float i wynik ich dodawania
-	mov [esp+16], dword 0
+	mov [esp+16], dword 0 ;wyzerowanie sumatora
+	
+	;sprwadzenie ile jest kolumn i skoczenie do odpowiedniego mnozenia
+	mov eax, ecx 
+	jz pierwszeMnozenie2
+
 	petlaMnozenia1:
 		movups xmm0, [esi]
 		movups xmm1, [edi]
@@ -260,7 +267,8 @@ multiplyMatrices:
 		add edi, 64
 		loop petlaMnozenia1
 
-	mov ecx, ebx
+	pierwszeMnozenie2:	
+		mov ecx, ebx
 	petlaMnozenia2:
 		movss xmm0, [esi]
 		movss xmm1, [edi]
@@ -273,42 +281,61 @@ multiplyMatrices:
 		add edi, 4
 		loop petlaMnozenia2
 	next_rowY:
-		mov eax, [ebp + 16]
-		mov edx, [esp+16]
+		mov eax, [ebp + 16] ; adres do kolejnego elementu tablicy Y
+		mov edx, [esp+16] ; wynik do zapisu
 		mov [eax], edx ; zapisanie liczby do nowej tablicy
-		add eax, 4
+		mov [esp + 16], dword 0 ; wyzerowanie sumatora
+		
+		add eax, 4 ; 
 		mov [ebp + 16], eax ; zapisujemy wskaznik na kolejny element tablicy
 		
-		lea esp, [esp + 20] ; kasujemy zaalokowana tablice
-		pop ecx
-		pop ebx
+		mov ecx, [ebp - 32]
+		mov ebx, [ebp - 28]
 
-		mov eax, [ebp + 28] ; do eax liczba wierszy macierzy Y
+		mov eax, [ebp - 8] ; do eax pozostala liczba wierszy macierzy Y
 		dec eax
+		mov [ebp-8], eax
 		je next_rowX ; jesli macierz Y mnozylo teraz ostatni wiersz to przejdz do nastepnego wiersza macierzy X
 
 		mov esi, [ebp + 8]
+	
+		jecxz pierwszeMnozenie2
 		jmp petlaMnozenia1
 
 	next_rowX:
-		mov eax, [ebp-4] ; w eax ile jeszcze kolumn pozostalo
+		mov eax, [ebp-4] ; w eax ile jeszcze wierszy macierzy X pozostalo
 		dec eax
 		mov [ebp-4], eax
 		je koniecMnozenia
+
+		;resetujemy licznik wierszy macierzy Y
+		mov eax, [ebp + 28]
+		mov [ebp - 8], eax
 
 		mov edi, [ebp + 12] ; macierz Y zaczynamy od poczatku
 		mov eax, [ebp + 24] ; liczba kolumn macierzy X
 		mov edx, dword 4		
 		mul edx
-		mov edx, [ebp + 8] ; w eax znajduje sie wskaznik na kolejny wiersz
+		mov edx, [ebp + 8] ; w edx znajduje sie wskaznik na kolejny wiersz
 		add eax, edx
 		mov esi, eax ; wskaznik na pierwszy element kolejnego wiersza wedruje do esi
 		mov [ebp+8], esi ;zapisujemy wskaznik do pamieci
 			
 
 
+		
+		mov ecx, [ebp - 32] 
+		mov ebx, [ebp - 28]
+		jecxz farJumpToMnozenie2
+		jmp petlaMnozenia1
+
+	farJumpToMnozenie2:
+		jmp pierwszeMnozenie2
+		
+
 	koniecMnozenia:
 ;;;;;;;;;;;;;;;;;;;;
+		lea esp, [esp + 28]
 		pop edx
 		pop ecx
 		pop ebx
@@ -331,16 +358,29 @@ trainThetaMatrix:
 	;prolog
 	push ebp
 	mov ebp, esp
+
+	
+	
 		
 	wez_GOT ;pobranie adresu got do ebx
 
 	;przyklad rezerwacji pamieci	
-	mov eax, [esp+12] ; do eax liczba wierszy
-	mul dword [esp + 16] ; mnozymy razy liczbe kolumn
-	mov ecx, eax ; do ecx liczba elementow do zaalokowania
+	mov eax, dword 5000; do eax liczba wierszy
 	zarezerwujPamiec eax  
 	mov eax, esp
 	
+
+	push dword 1
+	push dword [ebp+16]
+	push dword [ebp+12]
+	push eax
+	push dword[ebp + 20]
+	push dword[ebp + 8]
+	call multiplyMatrices
+	mov edx, [eax]
+
+
+
 	;przyklad transponowania macierzy
 	push dword[ebp + 16]
 	push dword[ebp + 12]

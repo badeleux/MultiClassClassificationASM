@@ -15,7 +15,8 @@ $(LIBRARY):$(OBJECTSASM)
 	ld -shared $(OBJECTSASM) -o $@ -m elf_i386
 
 $(OBJECTSASM):$(SOURCESASM)
-	nasm -f elf -g -F dwarf $< -o $@
+	nasm -O1 -f elf -g -F dwarf $< -o $@
+
 
 
 

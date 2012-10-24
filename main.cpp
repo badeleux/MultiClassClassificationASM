@@ -88,21 +88,21 @@ classificator.trainThetaMatrix(X, y, 10, 23, allTheta);
     
 classificator.predictUsingThetaMatrix(X.row(2566));
 
-	fmat testX;
-	testX << 2 << 3 << endr << 4 << 5 << endr;
+	//fmat testX, testY;
+	//testX << 2 << 3 << endr << 4 << 5 << endr;
+	//testY << 6 << 7 << endr;
 
-	float *array = convertArmadilloMatrixToNormalArray(testX);
-	float *allThetaArray = convertArmadilloMatrixToNormalArray(allTheta);
- 
-	std::cout << "Przed" << endl;
-
-	for (int i = 0 ; i < 4 ; i++)
-		std::cout << array[i] << " ";
-//trainFunction(array,2,2,array,10,1.0f, allThetaArray);
-	std::cout << "Po: "<< endl;
+	fmat Z = X.t() * y;
 	
-	for (int i = 0 ; i < 4 ; i++)
-		std::cout << array[i] << " ";
+
+	std::cout << "Wynik mnozenia macierzy " << Z(0,0);
+	fflush(stdout);
+	float *array = convertArmadilloMatrixToNormalArray(X.t());
+	float *arrayY = convertArmadilloMatrixToNormalArray(y);
+	float *allThetaArray = convertArmadilloMatrixToNormalArray(allTheta);
+	
+	trainFunction(array,401,5000,arrayY,10,1.0f, allThetaArray);
+	
     
    fflush(stdout); 
     
