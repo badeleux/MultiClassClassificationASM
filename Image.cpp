@@ -256,7 +256,6 @@ void Image::translateImage(int value, Image& oldImage)
 {
     int rows = oldImage.N;
     int cols = oldImage.M;
-    int gray = oldImage.Q;
     Image tempImage(N, M, Q);
     
     for(int i = 0; i < (rows - value); i++)
@@ -355,10 +354,9 @@ Image Image::operator-(const Image& oldImage)
 void Image::negateImage(Image& oldImage)
 /*negates image*/
 {
-    int rows, cols, gray;
+    int rows, cols;
     rows = N;
     cols = M;
-    gray = Q;
     
     Image tempImage(N,M,Q);
     
@@ -383,12 +381,10 @@ ostream& operator<<(ostream& os, const Image& image)
     return os;
 }
 
-#pragma mark Static methods
-
 int Image::readImage(char fname[], Image& image)
 {
     int i, j;
-    int N, M, Q;
+    int N, M;
     unsigned char *charImage;
     char header [100], *ptr;
     ifstream ifp;
@@ -416,9 +412,6 @@ int Image::readImage(char fname[], Image& image)
     
     M=strtol(header,&ptr,0);
     N=atoi(ptr);
-    
-    ifp.getline(header,100,'\n');
-    Q=strtol(header,&ptr,0);
     
     charImage = (unsigned char *) new unsigned char [M*N];
     

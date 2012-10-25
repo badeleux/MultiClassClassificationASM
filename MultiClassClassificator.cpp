@@ -15,7 +15,7 @@ fmat MultiClassClassificator::sigmoidFunction(fmat z)
     return 1/(1+exp(-z));
 }
 
-double MultiClassClassificator::costFunction(fmat theta, fmat X, fmat y, double lambda)
+double MultiClassClassificator::costFunction(fmat theta, fmat X, fmat y)
 {
     int m = y.n_elem;
     fmat J = (-y.t() * log(sigmoidFunction(X*theta)) - (1-y).t()*log(1-sigmoidFunction(X*theta)))/m;
@@ -25,7 +25,7 @@ double MultiClassClassificator::costFunction(fmat theta, fmat X, fmat y, double 
     
 }
 
-fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations, double lambda)
+fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations)
 {
     int m = y.n_elem;
     for (int i = 0; i < numOfIterations; i++) {
@@ -35,20 +35,22 @@ fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y
     return initialTheta;
 }
 
-fmat MultiClassClassificator::trainThetaMatrix(fmat X, fmat y, int num_labels, double lambda, fmat &allThetaTemp)
+fmat MultiClassClassificator::trainThetaMatrix(fmat X, fmat y, int num_labels, fmat &allThetaTemp)
 {
 	
     numLabels = num_labels;
     allTheta = allThetaTemp; 
-    fmat initialThetaVector = zeros<fmat>(1,X.n_cols);
+
     
     for(int i = 0 ; i < num_labels ; i++)
     {
+		
+    	fmat initialThetaVector = zeros<fmat>(1,X.n_cols);
         fmat yTemp = zeros<fmat>(y.n_elem,1);
-        for (int j = 0; j < y.n_elem; j++) {
+        for (unsigned int j = 0; j < y.n_elem; j++) {
             yTemp(j) = y(j) == i+1; 
         }
-        allTheta.row(i) = trainThetaVector(initialThetaVector, X, yTemp, 50,(double)1);
+        allTheta.row(i) = trainThetaVector(initialThetaVector, X, yTemp, 50);
     }
     return allTheta;
 }

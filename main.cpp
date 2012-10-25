@@ -13,49 +13,53 @@
 #include <dlfcn.h>
 #include "Image.h"
 #include "MultiClassClassificator.h"
+#include <ctime>
 
-//params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class, lambda
-typedef unsigned int (*trainThetaMatrix)(float*, int, int, float*,int, float, float*);
+using namespace std;
 
-float* convertArmadilloMatrixToNormalArray(fmat matrix);
 
-float* convertArmadilloMatrixToNormalArray(fmat matrix)
+//params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class
+typedef unsigned int (*trainThetaMatrix)(float*, int, int, int*,int, float*);
+
+
+template <class T> 
+T* convertArmadilloMatrixToNormalArray(fmat matrix)
 {
 	//creating matrix
-	float *array = new float[matrix.n_rows * matrix.n_cols];
+	T *array = new T[matrix.n_rows * matrix.n_cols];
 	//filling array
-	for (int i = 0 ; i < matrix.n_rows ; i++)
+	for (unsigned int i = 0 ; i < matrix.n_rows ; i++)
 	{
-		for (int j = 0 ; j < matrix.n_cols ; j++)
+		for (unsigned int j = 0 ; j < matrix.n_cols ; j++)
 		{
-			array[j + i*matrix.n_cols] = matrix(i,j);
+			array[j + i*matrix.n_cols] = (T)matrix(i,j);
 		}
 	}
 	
 	return array;
-
 }
+
 
 int main(int argc, const char * argv[])
 {
     void *handle;
 	char *error;
-	 
 	
-    // insert code here...
+	//get handle for dynamic library 
     handle = dlopen("./libclass.so", RTLD_LAZY);
 	if(handle == NULL) {
 		fprintf(stderr, "Error: open/load error of libclass.so failed: %s\n", dlerror());
 		exit(1);
 	}
 	
+	//get handle for train Function
 	trainThetaMatrix trainFunction = (trainThetaMatrix) dlsym(handle, "trainThetaMatrix");
 	if((error = dlerror()) != NULL) {
 		fprintf(stderr, "Error: symbol lookup in libclass.so failed: %s\n", dlerror());
 		exit(2);
 	}
 	
-    
+    //load training set
     fmat X, y;
     X.load("./X.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
@@ -64,53 +68,62 @@ int main(int argc, const char * argv[])
 	fmat one_vector = ones<fmat>(X.n_rows,1);
 	X = join_rows(one_vector,X);
 
-    int M, N, Q; // rows, cols, grayscale
-    int val;
-    bool type;
+    //int M, N, Q; // rows, cols, grayscale
+    //bool type;
 
 	// read image header
-    Image::readImageHeader("./seven.PGM", N, M, Q, type);
+    //Image::readImageHeader("./seven.PGM", N, M, Q, type);
 
 	// allocate memory for the image array
-	Image image(N, M, Q);
+	//Image image(N, M, Q);
 	// read image
-    Image::readImage("./seven.PGM", image);
+    //Image::readImage("./seven.PGM", image);
 
 
-    ;fmat imagePixelMatrix = image.getPixelMatrix();
-	;imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
+    //fmat imagePixelMatrix = image.getPixelMatrix();
+	//imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
 
 
 	fmat allTheta = zeros<fmat>(10, X.n_cols);
 
-    MultiClassClassificator classificator = MultiClassClassificator();
-classificator.trainThetaMatrix(X, y, 10, 23, allTheta);
-    
-classificator.predictUsingThetaMatrix(X.row(2566));
+	while(1) 
+	{
+		char choice;
+		clock_t begin;
+		clock_t end;
 
-	//fmat testX, testY;
-	//testX << 2 << 3 << endr << 4 << 5 << endr;
-	//testY << 6 << 7 << endr;
+		std::cout << "Witaj w programie uczacym macierz theta. " << std::endl << "By nauczyc macierz theta poprzez program napisny w jezyku wysokopoziomowym (C++) wcisnij klawisz \"c\". " << std::endl << "By nauczyc macierz w jezyku niskopioziomowym Netwide Assembler wcisnij \"a\"";
+		std::cin >> choice;
+		if (choice == 'c')
+		{
+    		MultiClassClassificator classificator = MultiClassClassificator();
+			begin = clock();
+			classificator.trainThetaMatrix(X, y, 10, allTheta);
+			end = clock();
+		}
+		else if (choice == 'a')
+		{
+			
+			float *array = convertArmadilloMatrixToNormalArray<float>(X);
+			int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
+			float *allThetaArray = convertArmadilloMatrixToNormalArray<float>(allTheta);
+			begin = clock();
+			trainFunction(array,5000,401,arrayY,10, allThetaArray);
+			end = clock();
+			delete[] array;
+			delete[] allThetaArray;
+			delete[] arrayY;
+		} 
 
-	fmat Z = X.t() * y;
-	
+		double elapsedSecs = double(end - begin) / CLOCKS_PER_SEC;
+		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << elapsedSecs << "s";
+	}
 
-	std::cout << "Wynik mnozenia macierzy " << Z(0,0);
-	fflush(stdout);
-	float *array = convertArmadilloMatrixToNormalArray(X.t());
-	float *arrayY = convertArmadilloMatrixToNormalArray(y);
-	float *allThetaArray = convertArmadilloMatrixToNormalArray(allTheta);
-	
-	trainFunction(array,401,5000,arrayY,10,1.0f, allThetaArray);
-	
+
+    fflush(stdout); 
     
-   fflush(stdout); 
-    
-   dlclose(handle); 
+	dlclose(handle); 
    
-	delete[] array;
-	delete[] allThetaArray;
- 
     return 0;
 }
 
