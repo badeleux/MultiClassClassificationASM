@@ -14,7 +14,7 @@
 #include "Image.h"
 #include "MultiClassClassificator.h"
 #include <ctime>
-
+#include <iomanip>
 using namespace std;
 
 
@@ -32,6 +32,7 @@ T* convertArmadilloMatrixToNormalArray(fmat matrix)
 	{
 		for (unsigned int j = 0 ; j < matrix.n_cols ; j++)
 		{
+
 			array[j + i*matrix.n_cols] = (T)matrix(i,j);
 		}
 	}
@@ -103,7 +104,6 @@ int main(int argc, const char * argv[])
 		}
 		else if (choice == 'a')
 		{
-			
 			float *array = convertArmadilloMatrixToNormalArray<float>(X);
 			int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
 			float *allThetaArray = convertArmadilloMatrixToNormalArray<float>(allTheta);
@@ -115,8 +115,8 @@ int main(int argc, const char * argv[])
 			delete[] arrayY;
 		} 
 
-		double elapsedSecs = double(end - begin) / CLOCKS_PER_SEC;
-		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << elapsedSecs << "s";
+		double elapsedSecs = (double)((end - begin)/1000) ;
+		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << std::setprecision(2) << elapsedSecs <<  "ms";
 	}
 
 

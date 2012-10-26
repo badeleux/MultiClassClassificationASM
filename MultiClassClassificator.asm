@@ -65,11 +65,18 @@ koniec:
 ;makro rezerwujace pamiec w pierwszym parametrze przekazujemy ile elementow tablicy dword chcemy
 ;drugi parametr to miejsce gdzie zapisac adres do tablicy
 %macro zarezerwujPamiec 1
+	push edx
+	push ebp
+	push ebx
+	mov ebp, esp
 	mov eax, %1
 	mov ebx, 4
 	mul ebx
 	neg eax
 	add esp, eax
+	mov ebx, [ebp]
+	mov edx, [ebp + 8]
+	mov ebp, [ebp+4]
 %endmacro
 
 ;funkcja do liczenia funkcji sigmoid 
@@ -193,7 +200,7 @@ transposeMatrix:
 		pop ebp
 		ret
 
-;mnozenie Z = X * Y gdzie X jest macierza (n x m), a Y jest macierza (l x m)
+;mnozene Z = X * Y gdzie X jest macierza (n x m), a Y jest macierza (l x m)
 ;pierwszy par - wskaznik do tablicy X [ebp + 8] 
 ;drugi par - wskaznik do tablicy Y [ebp + 12]
 ;trzeci par - wskaznik do tablicy Z [ebp + 16]
@@ -392,6 +399,7 @@ trainThetaMatrix:
 
 	wez_GOT
 	mov [ebx + X_t wrt ..gotoff], esp ; zapisanie do xmiennej X_t 
+	
 
 	;transponowanie macierzy X
 	push dword[ebp + 16]
@@ -401,19 +409,18 @@ trainThetaMatrix:
 	call transposeMatrix
 
 
-	wez_GOT	
+	mov eax, [ebp+12]
+	zarezerwujPamiec eax
+	mov [ebx + MULTIPLY_PTR wrt ..gotoff], esp
+	
+
 	mov ecx, [ebp + 24]
-	lea edx, [ebx + EULER_NUMBER wrt ..gotoff]
 
-	;allocating memory for initialThetaVector 1x401
-	;mov eax, dword[ebp + 16]	
-	;zarezerwujPamiec eax
-	;mov ebx, esp
 
-	push edx ; w [ebx - 4] znajduje sie adres do liczby e
+
 
 	petla_liczba_klas: ;lecimy od 10->0 
-		push ecx ; licznik petli w [ebx - 8]
+		mov [ebx + CURRENT_INDEX wrt ..gotoff], ecx		
 
 		mov eax, [ebp + 12]
 		zarezerwujPamiec eax ;rezerwacja pamieci 1x5000
@@ -422,7 +429,6 @@ trainThetaMatrix:
 		mov ecx, dword 50 ; liczba iteracji ustawiona na sztywno
 			petla_iteracje:
 				push ecx
-
 				;najpierw mnozymy X*initialTheta.t()
 				push dword 1
 				push dword [ebp+16]
@@ -431,14 +437,18 @@ trainThetaMatrix:
 				push dword [ebp + 28]
 				push dword [ebp+8]
 				call multiplyMatrices ;wynik jest w edx
-				lea esp, [esp + 24]
+				lea esp, [esp+24]
+
+
 	
 				;liczenie sigmoid function
-				push edx
-				push edx ; 
-				push dword [ebx - 4] ;liczba eulera
-				call sigmoidFunction ; wynik jest w edx
-				lea esp, [esp+12] ; kasujemy stos
+			;	push edx
+			;	push edx ;
+			;	wez_GOT
+			;	lea ebx, [ebx + EULER_NUMBER wrt ..gotoff] 
+			;	push ebx
+			;	call sigmoidFunction ; wynik jest w edx
+			;	lea esp, [esp+12] ; kasujemy stos
 
 				;zczytujemy tablice y, jesli element tablicy y == ecx to odejmij 1 od tablicy ktora mamy w edx
 				mov ecx, [ebp+12]
@@ -446,7 +456,7 @@ trainThetaMatrix:
 				mov edi, edx
 				petlaOdejmujaca:
 					mov eax, [esi]
-					cmp eax, [ebx-8]
+					cmp eax, [ebx+ CURRENT_INDEX wrt ..gotoff]
 					jne nextElement
 					fld1
 					fsubr dword[edi]
@@ -457,12 +467,7 @@ trainThetaMatrix:
 				loop petlaOdejmujaca
 
 				;rezerwacja pamieci na mnozenie (sigmoid(somedata) - y).t() * X
-				mov eax, [ebp+12]
-				zarezerwujPamiec eax
-				mov eax, esp
-
-				;pobranie adresu macierzy X_t
-				wez_GOT				
+				mov eax, [ebx + MULTIPLY_PTR wrt ..gotoff]
 
 				;mnozenie: 
 				push dword[ebp + 16] ; liczba wierszy drugiej macierzy
@@ -481,29 +486,25 @@ trainThetaMatrix:
 				dzielenie:
 					fld dword[esi]
 					fdiv dword[ebp + 12]
-					fsubr dword[esi]
-					fstp dword[esi]
+					fsubr dword[edi]
+					fstp dword[edi]
 					add esi, 4
 					add edi, 4
 				loop dzielenie
-
+				
 				pop ecx
 			loop farJumpToPetlaIteracje
-		pop ecx
 		;kolejny wektor wytrenowany, przejdz do nastepnego:
 		mov eax, [ebp + 16]
 		mov edx, dword 4
 		mul edx
 		add eax,[ebp+28]
 		mov [ebp+28], eax
+	
+		mov ecx, [ebx + CURRENT_INDEX wrt ..gotoff]
+	
 	loop farJumpToPetlaLiczbaKlas
 
-;przyklad liczenia sigmoid function	
-;	push dword edx
-;	push dword eax
-;	push dword eax
-;	call sigmoidfunction
-;	mov eax, [eax]
 
 ;epilog:
 	mov esp, ebp
@@ -519,5 +520,6 @@ farJumpToPetlaLiczbaKlas:
 
 section .data
 	EULER_NUMBER dd 0x402DF854
-	X_t dw 0
-	
+	X_t dd 0
+	CURRENT_INDEX dd 0
+	MULTIPLY_PTR dd 0	
