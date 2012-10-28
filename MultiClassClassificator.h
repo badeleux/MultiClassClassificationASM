@@ -22,10 +22,11 @@ private:
     int numLabels;
     //Methods
     fmat trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations);
-    fmat sigmoidFunction(fmat z);
+
     double costFunction(fmat theta, fmat X, fmat y);
 public:
     
+    fmat sigmoidFunction(fmat z);
     fmat trainThetaMatrix(fmat X, fmat y, int num_labels, fmat&);
     int predictUsingThetaMatrix(fmat X);
 };

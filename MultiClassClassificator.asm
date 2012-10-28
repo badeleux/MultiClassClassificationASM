@@ -1,6 +1,6 @@
 section	.text
 extern	_GLOBAL_OFFSET_TABLE_	; zewnętrzny, uzupełniony przez linker
-global	trainThetaMatrix:function
+global	trainThetaMatrix:function, predictUsingThetaMatrix:function
 ; makro do pobierania adresu GOT; wynik w EBX.
 %imacro	wez_GOT	0
 
@@ -11,57 +11,59 @@ global	trainThetaMatrix:function
 %endmacro
 
 ;makro do liczenia potegi pierwszy parametr podstawa wykladnik to ecx drugi parametr to gdzie zapisac
-;pierwszy parametr to adres do podstawa [esp + 8]
-;drugi par to adres do zmiennej [esp + 12]
+;pierwszy parametr to adres do podstawy [esp + 8]
+;drugi par to adres do wykladnika [ebp + 12] 
+;drugi par to adres do zmiennej [esp + 16]
 powerFunction:	
 	push ebp
 	mov ebp, esp
-	push ecx
-	push eax
+	sub esp, 6
 	push ebx
-	finit ;inicjalizacja
+	push eax
+	finit	
+	fstcw WORD[ebp-2]
+	or WORD[ebp-2], 110000000000b
+	fldcw WORD[ebp-2]
 
-	mov eax, [esp +20] ; do eax adres do podstawy 
-	mov ebx, [esp + 24] ; do ebx adres do zmiennej gdzie wrzucic wynik
 
+	fld dword[ebp+12]
+	fld dword[ebp+8]
 
-	cmp ecx, 0
-	je koniec_przy_zerze
-	jnl dodatni
+	;sprawdzenie czy podstawa jest ujemna
+	fldz 
+	fcomip st0, st1
+	fabs
+		
+	fyl2x
 
+	fist dword[ebp-6]
 	
-	neg ecx ;jesli wykladnik jest ujemny zmien znak
-	dec ecx
-	FLD1
-	FDIV dword [eax]
-	cmp ecx, 0
-	je koniec
-	FLD1
-	FDIV dword [eax]
-	jmp petla
-dodatni:
-	dec ecx
-	FLD dword [eax]
-	cmp ecx, 0
-	je koniec
-	FLD dword [eax]
-petla:
-	FMUL st0, st1
-		loop petla
-	jmp koniec
-koniec_przy_zerze:
-	fld1 
-koniec:
-	fstp dword [ebx]  
+	fild dword[ebp-6]
+	fsub
+	f2xm1
+	fld1
+	fadd
+	fild dword[ebp-6]
+	fxch
+	fscale
 	
-;;;;;;;;;;;epilog:
-	pop ebx
+	ja ujemna
+	dodatnia:	
+		jmp wynik
+	ujemna:
+		fchs
+
+	wynik:
+	mov ebx, dword[ebp+16]
+	fst DWORD[ebx]
+	
 	pop eax
-	pop ecx     
+	pop ebx
 	mov esp, ebp
-	pop ebp                    
-	ret                                                                                                                                                                                                               
+	pop ebp
+	ret
 
+	
 ;makro rezerwujace pamiec w pierwszym parametrze przekazujemy ile elementow tablicy dword chcemy
 ;drugi parametr to miejsce gdzie zapisac adres do tablicy
 %macro zarezerwujPamiec 1
@@ -95,21 +97,22 @@ sigmoidFunction:
 	mov esi,0
 	petla1:
 		push ecx
-		mov ebx, [esp + 28] ;w ebx adres do macierzy X
+		mov ebx, [ebp + 8] ;w ebx adres do macierzy X
 		finit
 		fld dword [ebx + esi] ; w ecx element tablicy
 		fchs ; -z
 		fist dword [ebx + esi]
 		mov ecx, [ebx + esi]
-		mov edx, [esp + 36] ; w edx adres do e
-		mov ebx, [esp + 32] ; ebx adres do drugiej tablicy
+		mov edx, [ebp + 16] ; w edx adres do e
+		mov ebx, [ebp + 12] ; ebx adres do drugiej tablicy
 		lea eax, [ebx + esi]; w eax adres do elementu nowej tablicy
 		
 ;funkcja potegowa:
 		push eax		
-		push edx
+		push ecx
+		push dword[edx]
 		call powerFunction ; mamy policzone e^-z(?)
-		pop edx
+		lea esp, [esp+8]
 		pop eax
 
 		finit
@@ -382,7 +385,7 @@ wyzerujWektor:
 ;drugi parametr to liczba wierszy w tablicy X [esp + 12]
 ;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
 ;czwarty parametr to wskaznik na tablice Y [esp + 20]
-;piaty parametr to liczba elementow wektora Y [esp + 24]
+;piaty parametr to liczba klas [esp + 24]
 ;szosty par. to lambda [esp + 28]
 ;siodmy par. to wskaznik do allTheta (wyjsciowa tablica) [esp + 32]
 trainThetaMatrix:
@@ -390,7 +393,7 @@ trainThetaMatrix:
 	push ebp
 	mov ebp, esp
 
-	;rezerwacja pamieci na transpozycje macierzy X
+	
 	mov eax, [esp+12]
 	mov edx, [esp+16]
 	mul edx
@@ -408,18 +411,20 @@ trainThetaMatrix:
 	push eax
 	call transposeMatrix
 
+;dlacelow testoywch
+;	mov eax, [ebx + X_t wrt ..gotoff]
+;	mov esp, ebp
+;	pop ebp
+;	ret
+
 
 	mov eax, [ebp+12]
 	zarezerwujPamiec eax
 	mov [ebx + MULTIPLY_PTR wrt ..gotoff], esp
 	
+	mov ecx, dword 1
 
-	mov ecx, [ebp + 24]
-
-
-
-
-	petla_liczba_klas: ;lecimy od 10->0 
+	petla_liczba_klas: ;lecimy od 1->10 
 		mov [ebx + CURRENT_INDEX wrt ..gotoff], ecx		
 
 		mov eax, [ebp + 12]
@@ -439,16 +444,20 @@ trainThetaMatrix:
 				call multiplyMatrices ;wynik jest w edx
 				lea esp, [esp+24]
 
+	;			mov eax, 49
+	;			cmp eax, ecx
+	;			je wypiszwymaluj
 
-	
 				;liczenie sigmoid function
-			;	push edx
-			;	push edx ;
-			;	wez_GOT
-			;	lea ebx, [ebx + EULER_NUMBER wrt ..gotoff] 
-			;	push ebx
-			;	call sigmoidFunction ; wynik jest w edx
-			;	lea esp, [esp+12] ; kasujemy stos
+				mov ecx, [ebp+12]
+				wez_GOT
+				lea eax, [ebx + EULER_NUMBER wrt ..gotoff] 
+				push eax
+				push edx
+				push edx
+				call sigmoidFunction ; wynik jest w edx
+				lea esp, [esp+12] ; kasujemy stos
+				
 
 				;zczytujemy tablice y, jesli element tablicy y == ecx to odejmij 1 od tablicy ktora mamy w edx
 				mov ecx, [ebp+12]
@@ -460,11 +469,12 @@ trainThetaMatrix:
 					jne nextElement
 					fld1
 					fsubr dword[edi]
-					fst dword[edi]
+					fstp dword[edi]
 					nextElement:
 						add edi, 4
 						add esi, 4
 				loop petlaOdejmujaca
+				
 
 				;rezerwacja pamieci na mnozenie (sigmoid(somedata) - y).t() * X
 				mov eax, [ebx + MULTIPLY_PTR wrt ..gotoff]
@@ -483,9 +493,10 @@ trainThetaMatrix:
 				mov esi, eax
 				mov edi, [ebp+28]
 				mov ecx, [ebp + 16]
+				fild dword[ebp+12]
 				dzielenie:
 					fld dword[esi]
-					fdiv dword[ebp + 12]
+					fdiv st0, st1
 					fsubr dword[edi]
 					fstp dword[edi]
 					add esi, 4
@@ -502,23 +513,55 @@ trainThetaMatrix:
 		mov [ebp+28], eax
 	
 		mov ecx, [ebx + CURRENT_INDEX wrt ..gotoff]
-	
-	loop farJumpToPetlaLiczbaKlas
+		inc ecx
+		mov eax, dword 11
+		cmp ecx, eax
+		je epilog
+	jmp petla_liczba_klas
 
 
-;epilog:
+epilog:
+	mov eax, [ebp + 28]
 	mov esp, ebp
 	pop ebp
-	xor	eax, eax	; funkcja zwraca 0 jako brak błędu
+	ret
+
+
+
+	wypiszwymaluj:
+		mov eax, edx 
+		mov esp, ebp
+		pop ebp
+		ret
+
+
+;[ebp+8] X.row
+;[ebp+12] allTheta
+;[ebp+16] predictVector
+;[ebp+20] allTheta_rows
+;[ebp+24] allTheta_cols
+predictUsingThetaMatrix:
+	push ebp
+	mov ebp, esp
+
+	push dword 1
+	push dword[ebp+24]
+	push dword[ebp+20]
+	push dword[ebp+16]
+	push dword[ebp+8]
+	push dword[ebp+12]
+	call multiplyMatrices
+
+
+	mov esp, ebp
+	pop ebp
 	ret
 
 farJumpToPetlaIteracje:
 	jmp petla_iteracje
 
-farJumpToPetlaLiczbaKlas:
-	jmp petla_liczba_klas
-
 section .data
+	dane_testowe dd 0xbecccccd
 	EULER_NUMBER dd 0x402DF854
 	X_t dd 0
 	CURRENT_INDEX dd 0

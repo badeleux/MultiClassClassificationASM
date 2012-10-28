@@ -19,8 +19,9 @@ using namespace std;
 
 
 //params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class
-typedef unsigned int (*trainThetaMatrix)(float*, int, int, int*,int, float*);
-
+typedef float* (*trainThetaMatrix)(float*, int, int, int*,int, float*);
+//params: X.row, allTheta, predictVector, allTheta_rows, allTheta_cols
+typedef unsigned int (*predictUsingThetaMatrix)(float*, float*, float*, int, int);
 
 template <class T> 
 T* convertArmadilloMatrixToNormalArray(fmat matrix)
@@ -59,12 +60,21 @@ int main(int argc, const char * argv[])
 		fprintf(stderr, "Error: symbol lookup in libclass.so failed: %s\n", dlerror());
 		exit(2);
 	}
+
+	//get handle for predict Function
+	predictUsingThetaMatrix predictFunction = (predictUsingThetaMatrix) dlsym(handle, "predictUsingThetaMatrix");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "Error: symbol lookup in libclass.so failed: %s\n", dlerror());
+		exit(2);
+	}
 	
     //load training set
     fmat X, y;
     X.load("./X.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
 	
+	X = X/255;
+
 	//add bias unit
 	fmat one_vector = ones<fmat>(X.n_rows,1);
 	X = join_rows(one_vector,X);
@@ -95,25 +105,50 @@ int main(int argc, const char * argv[])
 
 		std::cout << "Witaj w programie uczacym macierz theta. " << std::endl << "By nauczyc macierz theta poprzez program napisny w jezyku wysokopoziomowym (C++) wcisnij klawisz \"c\". " << std::endl << "By nauczyc macierz w jezyku niskopioziomowym Netwide Assembler wcisnij \"a\"";
 		std::cin >> choice;
+
+
+
 		if (choice == 'c')
 		{
     		MultiClassClassificator classificator = MultiClassClassificator();
 			begin = clock();
 			classificator.trainThetaMatrix(X, y, 10, allTheta);
+			classificator.predictUsingThetaMatrix(X.row(4425));
 			end = clock();
+			
 		}
 		else if (choice == 'a')
 		{
+//			MultiClassClassificator classificator = MultiClassClassificator();
+//			fmat test = classificator.trainThetaMatrix(X,y,10,allTheta);
+
 			float *array = convertArmadilloMatrixToNormalArray<float>(X);
 			int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
 			float *allThetaArray = convertArmadilloMatrixToNormalArray<float>(allTheta);
+			float *X_row = convertArmadilloMatrixToNormalArray<float>(X.row(325));
+			float *predictVector = new float[10];
 			begin = clock();
-			trainFunction(array,5000,401,arrayY,10, allThetaArray);
+			float *transposeASM = trainFunction(array,5000,401,arrayY,10, allThetaArray);
+	/*		float *transposeC = convertArmadilloMatrixToNormalArray<float>(test);
+			for (int i =0 ; i < 5000 ; i++)
+{
+				if (transposeASM[i] == transposeC[i])
+					std::cout << "Ok ";
+				else
+					std::cout << "nie zgadza sie na " <<  transposeASM[i] << " " << transposeC[i];
+				std::cout << std::endl;
+				fflush(stdout);
+}*/
 			end = clock();
+			predictFunction(X_row, allThetaArray, predictVector, 10, 401);
+			for (int i = 0 ; i < 10 ; i++)
+				std::cout << predictVector[i] << std::endl;
 			delete[] array;
 			delete[] allThetaArray;
 			delete[] arrayY;
+		
 		} 
+		
 
 		double elapsedSecs = (double)((end - begin)/1000) ;
 		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << std::setprecision(2) << elapsedSecs <<  "ms";
