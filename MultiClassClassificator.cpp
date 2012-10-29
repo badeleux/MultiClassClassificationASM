@@ -31,11 +31,11 @@ fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y
     for (int i = 0; i < numOfIterations; i++) {
 //        costFunction(initialTheta.t(), X, y, 0);
 //
-		fmat tranposeX = X.t();
-	fmat firstMultiply = X*initialTheta.t();
-		fmat sigmoid = sigmoidFunction(X*initialTheta.t());
-	fmat next = sigmoid - y;
-		fmat next2 = next.t() * X;
+//		fmat tranposeX = X.t();
+//	fmat firstMultiply = X*initialTheta.t();
+//		fmat sigmoid = sigmoidFunction(X*initialTheta.t());
+//	fmat next = sigmoid - y;
+//		fmat next2 = next.t() * X;
 //	if (i==1)
 //		return firstMultiply;	
         initialTheta -= ((sigmoidFunction(X*initialTheta.t()) - y).t()*X)/m;
@@ -46,30 +46,31 @@ fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y
     return initialTheta;
 }
 
-fmat MultiClassClassificator::trainThetaMatrix(fmat X, fmat y, int num_labels, fmat &allThetaTemp)
+void* MultiClassClassificator::trainThetaMatrix(void *args)
 {
-	
-    numLabels = num_labels;
-    allTheta = allThetaTemp; 
+	TrainArgs *arguments = (TrainArgs*)args;
 
-    
-    for(int i = numLabels ; i > 0 ; i--)
+	fmat X = *((fmat*)arguments->X);
+	fmat y = *((fmat*)arguments->y);
+	int from = arguments->from;
+	int to = arguments->to;
+	fmat *allTheta = (fmat*)(arguments->theta);
+    for(int i = from ; i < to ; i++)
     {
-		
     	fmat initialThetaVector = zeros<fmat>(1,X.n_cols);
         fmat yTemp = zeros<fmat>(y.n_elem,1);
         for (unsigned int j = 0; j < y.n_elem; j++) {
-            yTemp(j) = y(j) == i; 
+            yTemp(j) = y(j) == i+1; 
         }
-//		return trainThetaVector(initialThetaVector, X, yTemp, 50);
-        allTheta.row(i-1) = trainThetaVector(initialThetaVector, X, yTemp, 50);
-    }
-    return allTheta;
+		
+        allTheta->row(i-from) = trainThetaVector(initialThetaVector, X, yTemp, 50);
+	}
+    return 0;
 }
 
-int MultiClassClassificator::predictUsingThetaMatrix(fmat X)
+int MultiClassClassificator::predictUsingThetaMatrix(fmat allTheta, fmat X)
 {
-    fmat predictVector = zeros<fmat>(numLabels, 1);
+    fmat predictVector = zeros<fmat>(allTheta.n_rows, 1);
     predictVector = allTheta * X.t();
     cout << predictVector;
     return predictVector(0);

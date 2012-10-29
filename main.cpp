@@ -6,7 +6,6 @@
 //  Created by Kamil Badyla on 08.10.2012.
 //  Copyright (c) 2012 3Soft S.A. All rights reserved.
 //
-
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -68,7 +67,7 @@ int main(int argc, const char * argv[])
 		exit(2);
 	}
 	
-    //load training set
+									//load training set
     fmat X, y;
     X.load("./X.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
@@ -94,8 +93,8 @@ int main(int argc, const char * argv[])
     //fmat imagePixelMatrix = image.getPixelMatrix();
 	//imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
 
+	pthread_t thread1, thread2;
 
-	fmat allTheta = zeros<fmat>(10, X.n_cols);
 
 	while(1) 
 	{
@@ -106,14 +105,34 @@ int main(int argc, const char * argv[])
 		std::cout << "Witaj w programie uczacym macierz theta. " << std::endl << "By nauczyc macierz theta poprzez program napisny w jezyku wysokopoziomowym (C++) wcisnij klawisz \"c\". " << std::endl << "By nauczyc macierz w jezyku niskopioziomowym Netwide Assembler wcisnij \"a\"";
 		std::cin >> choice;
 
-
+		
 
 		if (choice == 'c')
 		{
-    		MultiClassClassificator classificator = MultiClassClassificator();
 			begin = clock();
-			classificator.trainThetaMatrix(X, y, 10, allTheta);
-			classificator.predictUsingThetaMatrix(X.row(4425));
+
+			fmat thetaMatrix1 = zeros<fmat>(5, X.n_cols);
+			fmat thetaMatrix2 = zeros<fmat>(5, X.n_cols);
+
+			TrainArgs args1 = {&X, &y, 0, 5, &thetaMatrix1};
+			TrainArgs args2 = {&X, &y, 5, 10, &thetaMatrix2};
+
+			printf("pierwszy; %x\n", args1.theta);
+			pthread_create(&thread1, NULL, &MultiClassClassificator::trainThetaMatrix, (void*)&args1);
+			pthread_create(&thread2, NULL, &MultiClassClassificator::trainThetaMatrix, (void*)&args2);
+			
+			pthread_join(thread1, NULL);
+			pthread_join(thread2, NULL);
+
+
+			
+			printf("%x\n", args1.theta);
+			thetaMatrix1 = *(fmat*)args1.theta;
+			thetaMatrix2 = *(fmat*)args2.theta;
+			fmat allThetaMatrix =  join_cols(thetaMatrix1, thetaMatrix2);
+			MultiClassClassificator::predictUsingThetaMatrix(allThetaMatrix, X.row(4425));
+			
+
 			end = clock();
 			
 		}
@@ -121,7 +140,8 @@ int main(int argc, const char * argv[])
 		{
 //			MultiClassClassificator classificator = MultiClassClassificator();
 //			fmat test = classificator.trainThetaMatrix(X,y,10,allTheta);
-
+			
+	fmat allTheta = zeros<fmat>(10, X.n_cols);
 			float *array = convertArmadilloMatrixToNormalArray<float>(X);
 			int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
 			float *allThetaArray = convertArmadilloMatrixToNormalArray<float>(allTheta);

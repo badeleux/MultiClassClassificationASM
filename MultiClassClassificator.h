@@ -9,7 +9,7 @@
 #ifndef ASMNeuralNetwork_MultiClassClassificator_h
 #define ASMNeuralNetwork_MultiClassClassificator_h
 
-#include </usr/include/armadillo>
+#include "Common.h"
 
 using namespace std;
 using namespace arma;
@@ -17,18 +17,13 @@ using namespace arma;
 class MultiClassClassificator {
     
 private:
-    //Variables
-    fmat allTheta;
-    int numLabels;
     //Methods
-    fmat trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations);
-
+    static fmat trainThetaVector(fmat initialTheta, fmat X, fmat y, int numOfIterations);
+    static fmat sigmoidFunction(fmat z);
     double costFunction(fmat theta, fmat X, fmat y);
 public:
-    
-    fmat sigmoidFunction(fmat z);
-    fmat trainThetaMatrix(fmat X, fmat y, int num_labels, fmat&);
-    int predictUsingThetaMatrix(fmat X);
+    static void* trainThetaMatrix(void *args);
+    static int predictUsingThetaMatrix(fmat allTheta, fmat X);
 };
 
 #endif
