@@ -29,20 +29,8 @@ fmat MultiClassClassificator::trainThetaVector(fmat initialTheta, fmat X, fmat y
 {
     int m = y.n_elem;
     for (int i = 0; i < numOfIterations; i++) {
-//        costFunction(initialTheta.t(), X, y, 0);
-//
-//		fmat tranposeX = X.t();
-//	fmat firstMultiply = X*initialTheta.t();
-//		fmat sigmoid = sigmoidFunction(X*initialTheta.t());
-//	fmat next = sigmoid - y;
-//		fmat next2 = next.t() * X;
-//	if (i==1)
-//		return firstMultiply;	
-        initialTheta -= ((sigmoidFunction(X*initialTheta.t()) - y).t()*X)/m;
-		//std::cout << "Po pierwszej iteracji: "<< firstMultiply(17) << " "<< sigmoid(17) << " "<< next(17) << " "<< next2(1) << " " << tranposeX(0,17);
-		//fflush(stdout);
-		//return sigmoid;
-}
+	  initialTheta -= ((sigmoidFunction(X*initialTheta.t()) - y).t()*X)/m;
+	}
     return initialTheta;
 }
 
@@ -60,7 +48,7 @@ void* MultiClassClassificator::trainThetaMatrix(void *args)
     	fmat initialThetaVector = zeros<fmat>(1,X.n_cols);
         fmat yTemp = zeros<fmat>(y.n_elem,1);
         for (unsigned int j = 0; j < y.n_elem; j++) {
-            yTemp(j) = y(j) == i+1; 
+            yTemp(j) = y(j) == i; 
         }
 		
         allTheta->row(i-from) = trainThetaVector(initialThetaVector, X, yTemp, 50);
@@ -72,9 +60,13 @@ int MultiClassClassificator::predictUsingThetaMatrix(fmat allTheta, fmat X)
 {
     fmat predictVector = zeros<fmat>(allTheta.n_rows, 1);
     predictVector = allTheta * X.t();
-    cout << predictVector;
-    return predictVector(0);
-    
+	
+	std::cout << predictVector;
+	float maxElement = predictVector.max();
+	for ( unsigned int i = 0 ; i < predictVector.n_elem ; i++)
+		if (predictVector(i) == maxElement)
+			return i;
+	return 0;
 }
 
 

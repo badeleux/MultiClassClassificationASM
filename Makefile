@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -g -O0 -m32 
-LDFLAGS= -Wl,-m,elf_i386,-larmadillo,-lstdc++,-ldl,-lm
+LDFLAGS= -Wl,-m,elf_i386,-lpthread,-larmadillo,-lstdc++,-ldl,-lm
 SOURCES=Image.cpp main.cpp MultiClassClassificator.cpp 
 SOURCESASM = MultiClassClassificator.asm
 OBJECTSASM=$(SOURCESASM:.asm=.o)

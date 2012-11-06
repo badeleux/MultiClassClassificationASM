@@ -17,8 +17,8 @@
 using namespace std;
 
 
-//params: pointer to X, X_rows, X_cols, ptr to Y, Y_rows, number_of_class
-typedef float* (*trainThetaMatrix)(float*, int, int, int*,int, float*);
+//params: pointer to X, X_rows, X_cols, ptr to Y, from, to, allthetaptr
+typedef void* (*trainThetaMatrix)(void*);//float*, int, int, int*,int, int, float*);
 //params: X.row, allTheta, predictVector, allTheta_rows, allTheta_cols
 typedef unsigned int (*predictUsingThetaMatrix)(float*, float*, float*, int, int);
 
@@ -71,13 +71,25 @@ int main(int argc, const char * argv[])
     fmat X, y;
     X.load("./X.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
-	
+
+	for (unsigned int i = 0 ; i < y.n_elem ; i++)
+		if (y(i) == 10)
+			y(i) = 0;
+
 	X = X/255;
 
 	//add bias unit
-	fmat one_vector = ones<fmat>(X.n_rows,1);
-	X = join_rows(one_vector,X);
+	fmat one_vector = ones<fmat>(X.n_rows/2,1);
+	fmat X1 = X.submat(0,0,2499,399);
+	X1 = join_rows(one_vector, X1);
+	fmat X2 = X.submat(2500,0,4999,399);
+	X2 = join_rows(one_vector, X2);
 
+	fmat y1 = y.submat(0,0,2499,0);
+	fmat y2 = y.submat(2500,0,4999,0);
+
+	fmat one_vector2 = ones<fmat>(X.n_rows,1);
+	X = join_rows(one_vector2, X);
     //int M, N, Q; // rows, cols, grayscale
     //bool type;
 
@@ -94,7 +106,7 @@ int main(int argc, const char * argv[])
 	//imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
 
 	pthread_t thread1, thread2;
-
+	int testRow = 2300;
 
 	while(1) 
 	{
@@ -105,19 +117,18 @@ int main(int argc, const char * argv[])
 		std::cout << "Witaj w programie uczacym macierz theta. " << std::endl << "By nauczyc macierz theta poprzez program napisny w jezyku wysokopoziomowym (C++) wcisnij klawisz \"c\". " << std::endl << "By nauczyc macierz w jezyku niskopioziomowym Netwide Assembler wcisnij \"a\"";
 		std::cin >> choice;
 
-		
+		int prediction = 0;
 
 		if (choice == 'c')
 		{
 			begin = clock();
 
-			fmat thetaMatrix1 = zeros<fmat>(5, X.n_cols);
-			fmat thetaMatrix2 = zeros<fmat>(5, X.n_cols);
+			fmat thetaMatrix1 = zeros<fmat>(5, X1.n_cols);
+			fmat thetaMatrix2 = zeros<fmat>(5, X2.n_cols);
 
-			TrainArgs args1 = {&X, &y, 0, 5, &thetaMatrix1};
-			TrainArgs args2 = {&X, &y, 5, 10, &thetaMatrix2};
+			TrainArgs args1 = {&X1, &y1, 0, 5, &thetaMatrix1};
+			TrainArgs args2 = {&X2, &y2, 5, 10, &thetaMatrix2};
 
-			printf("pierwszy; %x\n", args1.theta);
 			pthread_create(&thread1, NULL, &MultiClassClassificator::trainThetaMatrix, (void*)&args1);
 			pthread_create(&thread2, NULL, &MultiClassClassificator::trainThetaMatrix, (void*)&args2);
 			
@@ -125,53 +136,113 @@ int main(int argc, const char * argv[])
 			pthread_join(thread2, NULL);
 
 
-			
-			printf("%x\n", args1.theta);
 			thetaMatrix1 = *(fmat*)args1.theta;
 			thetaMatrix2 = *(fmat*)args2.theta;
 			fmat allThetaMatrix =  join_cols(thetaMatrix1, thetaMatrix2);
-			MultiClassClassificator::predictUsingThetaMatrix(allThetaMatrix, X.row(4425));
-			
+			prediction = MultiClassClassificator::predictUsingThetaMatrix(allThetaMatrix, X1.row(testRow));
 
 			end = clock();
 			
 		}
 		else if (choice == 'a')
 		{
-//			MultiClassClassificator classificator = MultiClassClassificator();
-//			fmat test = classificator.trainThetaMatrix(X,y,10,allTheta);
-			
-	fmat allTheta = zeros<fmat>(10, X.n_cols);
-			float *array = convertArmadilloMatrixToNormalArray<float>(X);
-			int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
-			float *allThetaArray = convertArmadilloMatrixToNormalArray<float>(allTheta);
-			float *X_row = convertArmadilloMatrixToNormalArray<float>(X.row(325));
+			fmat allTheta1 = zeros<fmat>(5, X1.n_cols);
+			fmat allTheta2 = zeros<fmat>(5,X2.n_cols);	
+			//initialize arrays
+			//float *array = convertArmadilloMatrixToNormalArray<float>(X);
+			float *array1 = convertArmadilloMatrixToNormalArray<float>(X1);
+			float *array2 = convertArmadilloMatrixToNormalArray<float>(X2);
+			//int *arrayY = convertArmadilloMatrixToNormalArray<int>(y);
+			int *arrayY1 = convertArmadilloMatrixToNormalArray<int>(y1);
+			int *arrayY2 = convertArmadilloMatrixToNormalArray<int>(y2);
+			float *allThetaArray1 = convertArmadilloMatrixToNormalArray<float>(allTheta1);
+			float *allThetaArray2 = convertArmadilloMatrixToNormalArray<float>(allTheta2);
+			float *X_row = convertArmadilloMatrixToNormalArray<float>(X1.row(testRow));
 			float *predictVector = new float[10];
-			begin = clock();
-			float *transposeASM = trainFunction(array,5000,401,arrayY,10, allThetaArray);
-	/*		float *transposeC = convertArmadilloMatrixToNormalArray<float>(test);
-			for (int i =0 ; i < 5000 ; i++)
-{
-				if (transposeASM[i] == transposeC[i])
-					std::cout << "Ok ";
-				else
-					std::cout << "nie zgadza sie na " <<  transposeASM[i] << " " << transposeC[i];
-				std::cout << std::endl;
-				fflush(stdout);
-}*/
-			end = clock();
-			predictFunction(X_row, allThetaArray, predictVector, 10, 401);
-			for (int i = 0 ; i < 10 ; i++)
-				std::cout << predictVector[i] << std::endl;
-			delete[] array;
-			delete[] allThetaArray;
-			delete[] arrayY;
+
+			TrainArgsASM *args1 = new TrainArgsASM();
+			args1->X = array1;
+			args1->X_row = (int)X1.n_rows;
+			args1->X_col = (int)X1.n_cols;
+			args1->Y = arrayY1;
+			args1->from = 0;
+			args1->to = 5;
+			args1->allTheta = allThetaArray1;
+
+			TrainArgsASM *args2 = new TrainArgsASM();
+			args2->X = array2;
+			args2->X_row = (int)X2.n_rows;
+			args2->X_col = (int)X2.n_cols;
+			args2->Y = arrayY2;
+			args2->from = 5;
+			args2->to = 10;
+			args2->allTheta = allThetaArray2;
+			
 		
+			begin = clock();
+			pthread_attr_t attr;
+			
+			pthread_attr_init(&attr);
+
+			pthread_attr_setstacksize(&attr, 80400000);
+			
+			pthread_create(&thread1,&attr,trainFunction, (void*)args1);
+			pthread_create(&thread2,&attr,trainFunction, (void*)args2);
+//			trainFunction(args1);	
+//			trainFunction(args2);
+			pthread_join(thread1, NULL);
+			pthread_join(thread2, NULL);
+
+			//merging allthetaarray
+			
+	//		porownaj(thetaMatrix1, allThetaArray1);
+
+		//	return 0;
+
+
+			float *allTheta = new float[10*401];
+			float *copyArray = allThetaArray1;
+			int counter;
+			for (int i = 0 ; i < 10*401 ; i++)
+			{
+				counter = i;
+				if (i>=2005)
+				{	
+					copyArray = allThetaArray2;
+					counter = i - 2005;
+				}
+				allTheta[i] =  copyArray[counter];
+			}
+			predictFunction(X_row, allTheta, predictVector, 10, 401);
+		
+			float max = predictVector[0];
+			
+			std::cout << predictVector[0] << std::endl;
+			for (int i = 1 ; i < 10 ; i++)
+			{
+				if (max < predictVector[i])
+				{
+					max = predictVector[i];
+					prediction = i;
+ 				}
+				std::cout << predictVector[i] << std::endl;
+			}
+			end = clock();			
+			
+			delete[] array1;
+			delete[] array2;
+			delete[] arrayY1;
+			delete[] arrayY2;
+			delete[] allTheta;
+			delete[] predictVector;
+			delete[] allThetaArray1;
+			delete[] allThetaArray2;
+			delete[] X_row;
 		} 
 		
-
 		double elapsedSecs = (double)((end - begin)/1000) ;
-		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << std::setprecision(2) << elapsedSecs <<  "ms";
+		std::cout << "Na wytrenowanie macierzy potrzebne bylo " << std::setprecision(2) << elapsedSecs <<  "ms" << endl;
+		std::cout << "Mysle ze pod tymi danymi kryje sie liczba: " << prediction << endl << endl;
 	}
 
 

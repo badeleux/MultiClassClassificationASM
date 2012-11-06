@@ -1,6 +1,6 @@
 section	.text
 extern	_GLOBAL_OFFSET_TABLE_	; zewnętrzny, uzupełniony przez linker
-global	trainThetaMatrix:function, predictUsingThetaMatrix:function
+global	trainThetaMatrix:function, predictUsingThetaMatrix:function, proba:function
 ; makro do pobierania adresu GOT; wynik w EBX.
 %imacro	wez_GOT	0
 
@@ -11,8 +11,8 @@ global	trainThetaMatrix:function, predictUsingThetaMatrix:function
 %endmacro
 
 ;makro do liczenia potegi pierwszy parametr podstawa wykladnik to ecx drugi parametr to gdzie zapisac
-;pierwszy parametr to adres do podstawy [esp + 8]
-;drugi par to adres do wykladnika [ebp + 12] 
+;pierwszy parametr podstawa [esp + 8]
+;drugi par to wykladnik [ebp + 12] 
 ;drugi par to adres do zmiennej [esp + 16]
 powerFunction:	
 	push ebp
@@ -26,20 +26,16 @@ powerFunction:
 	fldcw WORD[ebp-2]
 
 
-	fld dword[ebp+12]
 	fld dword[ebp+8]
+	fld dword[ebp+12]
 
-	;sprawdzenie czy podstawa jest ujemna
-	fldz 
-	fcomip st0, st1
-	fabs
-		
 	fyl2x
 
-	fist dword[ebp-6]
-	
-	fild dword[ebp-6]
+	fist dword[ebp - 6]
+	fild dword[ebp - 6]
 	fsub
+
+
 	f2xm1
 	fld1
 	fadd
@@ -47,16 +43,8 @@ powerFunction:
 	fxch
 	fscale
 	
-	ja ujemna
-	dodatnia:	
-		jmp wynik
-	ujemna:
-		fchs
-
-	wynik:
 	mov ebx, dword[ebp+16]
 	fst DWORD[ebx]
-	
 	pop eax
 	pop ebx
 	mov esp, ebp
@@ -81,6 +69,7 @@ powerFunction:
 	mov ebp, [ebp+4]
 %endmacro
 
+
 ;funkcja do liczenia funkcji sigmoid 
 ;pierwszy parametr to tablica z (w ecx liczba elementow) [esp + 8]
 ;drugi parametr to adres do nowej macierzy [esp+12]
@@ -101,16 +90,16 @@ sigmoidFunction:
 		finit
 		fld dword [ebx + esi] ; w ecx element tablicy
 		fchs ; -z
-		fist dword [ebx + esi]
+		fst dword [ebx + esi]
 		mov ecx, [ebx + esi]
 		mov edx, [ebp + 16] ; w edx adres do e
 		mov ebx, [ebp + 12] ; ebx adres do drugiej tablicy
 		lea eax, [ebx + esi]; w eax adres do elementu nowej tablicy
 		
 ;funkcja potegowa:
-		push eax		
-		push ecx
+		push eax	
 		push dword[edx]
+		push ecx
 		call powerFunction ; mamy policzone e^-z(?)
 		lea esp, [esp+8]
 		pop eax
@@ -381,53 +370,56 @@ wyzerujWektor:
 	ret
 
 
-;pierwszy parametr to wskaznik na tablice X [esp + 8]
-;drugi parametr to liczba wierszy w tablicy X [esp + 12]
-;trzeci parametr to liczba kolumn w tablicy X [esp + 16]
-;czwarty parametr to wskaznik na tablice Y [esp + 20]
-;piaty parametr to liczba klas [esp + 24]
-;szosty par. to lambda [esp + 28]
-;siodmy par. to wskaznik do allTheta (wyjsciowa tablica) [esp + 32]
+;pierwszy parametr to wskaznik na tablice X [ebp]
+;drugi parametr to liczba wierszy w tablicy X [ebp + 4]
+;trzeci parametr to liczba kolumn w tablicy X [ebp + 8]
+;czwarty parametr to wskaznik na tablice Y [ebp + 12]
+;piaty parametr to parametr from [ebp+ 16]
+;szosty par. to parametr to [ebp + 20]
+;siodmy par. to wskaznik do allTheta (wyjsciowa tablica) [ebp + 24]
 trainThetaMatrix:
 	;prolog
 	push ebp
 	mov ebp, esp
+	push ebx ; jesli by tego nie bylo dostajemy segmentation fault przy uruchomieniu watku!!!	
 
-	
-	mov eax, [esp+12]
-	mov edx, [esp+16]
+
+	;operacje niezbedne podczas gdy mamy strukture
+	wez_GOT
+	mov eax, [ebp+4]
+	mov [ebx + EBP_PTR wrt ..gotoff], esp
+	mov ebp, [ebp+8]
+
+	;rezerwacja pamieci
+	mov eax, [ebp+4]
+	mov edx, [ebp+8]
 	mul edx
 	zarezerwujPamiec eax
 	mov eax, esp
 
-	wez_GOT
+
 	mov [ebx + X_t wrt ..gotoff], esp ; zapisanie do xmiennej X_t 
 	
-
+	
 	;transponowanie macierzy X
-	push dword[ebp + 16]
-	push dword[ebp + 12]
 	push dword[ebp + 8]
+	push dword[ebp + 4]
+	push dword[ebp]
 	push eax
 	call transposeMatrix
 
-;dlacelow testoywch
-;	mov eax, [ebx + X_t wrt ..gotoff]
-;	mov esp, ebp
-;	pop ebp
-;	ret
 
-
-	mov eax, [ebp+12]
+	mov eax, [ebp+4]
 	zarezerwujPamiec eax
 	mov [ebx + MULTIPLY_PTR wrt ..gotoff], esp
 	
-	mov ecx, dword 1
+	mov ecx, dword [ebp+16]
 
-	petla_liczba_klas: ;lecimy od 1->10 
+
+	petla_liczba_klas: ;lecimy od from->to 
 		mov [ebx + CURRENT_INDEX wrt ..gotoff], ecx		
 
-		mov eax, [ebp + 12]
+		mov eax, [ebp + 4]
 		zarezerwujPamiec eax ;rezerwacja pamieci 1x5000
 		mov edx, esp ; w edx wskaznik na ten wektor
 
@@ -436,20 +428,16 @@ trainThetaMatrix:
 				push ecx
 				;najpierw mnozymy X*initialTheta.t()
 				push dword 1
-				push dword [ebp+16]
-				push dword [ebp+12]
-				push edx
-				push dword [ebp + 28]
 				push dword [ebp+8]
+				push dword [ebp+4]
+				push edx
+				push dword [ebp + 24]
+				push dword [ebp]
 				call multiplyMatrices ;wynik jest w edx
 				lea esp, [esp+24]
 
-	;			mov eax, 49
-	;			cmp eax, ecx
-	;			je wypiszwymaluj
-
 				;liczenie sigmoid function
-				mov ecx, [ebp+12]
+				mov ecx, [ebp+4]
 				wez_GOT
 				lea eax, [ebx + EULER_NUMBER wrt ..gotoff] 
 				push eax
@@ -457,11 +445,12 @@ trainThetaMatrix:
 				push edx
 				call sigmoidFunction ; wynik jest w edx
 				lea esp, [esp+12] ; kasujemy stos
-				
+			
+				mov eax, [edx + 9600]
 
 				;zczytujemy tablice y, jesli element tablicy y == ecx to odejmij 1 od tablicy ktora mamy w edx
-				mov ecx, [ebp+12]
-				mov esi, [ebp+20] ; wskaznik na y
+				mov ecx, [ebp+4]
+				mov esi, [ebp+12] ; wskaznik na y
 				mov edi, edx
 				petlaOdejmujaca:
 					mov eax, [esi]
@@ -480,8 +469,8 @@ trainThetaMatrix:
 				mov eax, [ebx + MULTIPLY_PTR wrt ..gotoff]
 
 				;mnozenie: 
-				push dword[ebp + 16] ; liczba wierszy drugiej macierzy
-				push dword[ebp + 12] ; liczba kolumn pierwszej macierzy
+				push dword[ebp + 8] ; liczba wierszy drugiej macierzy
+				push dword[ebp + 4] ; liczba kolumn pierwszej macierzy
 				push dword 1 ; liczba wierszy pierwszej macierzy
 				push eax
 				push dword[ebx + X_t wrt ..gotoff]
@@ -491,9 +480,9 @@ trainThetaMatrix:
 
 				;podzielenie przez m i odjecie od initialTheta
 				mov esi, eax
-				mov edi, [ebp+28]
-				mov ecx, [ebp + 16]
-				fild dword[ebp+12]
+				mov edi, [ebp+24]
+				mov ecx, [ebp + 8]
+				fild dword[ebp+4]
 				dzielenie:
 					fld dword[esi]
 					fdiv st0, st1
@@ -506,33 +495,25 @@ trainThetaMatrix:
 				pop ecx
 			loop farJumpToPetlaIteracje
 		;kolejny wektor wytrenowany, przejdz do nastepnego:
-		mov eax, [ebp + 16]
+		mov eax, [ebp + 8]
 		mov edx, dword 4
 		mul edx
-		add eax,[ebp+28]
-		mov [ebp+28], eax
+		add eax,[ebp+24]
+		mov [ebp+24], eax
 	
 		mov ecx, [ebx + CURRENT_INDEX wrt ..gotoff]
 		inc ecx
-		mov eax, dword 11
+		mov eax, dword [ebp+20]
 		cmp ecx, eax
 		je epilog
 	jmp petla_liczba_klas
 
-
 epilog:
-	mov eax, [ebp + 28]
-	mov esp, ebp
+	mov esp, [ebx + EBP_PTR wrt ..gotoff]
+	pop ebx
 	pop ebp
 	ret
 
-
-
-	wypiszwymaluj:
-		mov eax, edx 
-		mov esp, ebp
-		pop ebp
-		ret
 
 
 ;[ebp+8] X.row
@@ -561,7 +542,8 @@ farJumpToPetlaIteracje:
 	jmp petla_iteracje
 
 section .data
-	dane_testowe dd 0xbecccccd
+	testowa dd 0
+	EBP_PTR dd 0	
 	EULER_NUMBER dd 0x402DF854
 	X_t dd 0
 	CURRENT_INDEX dd 0
