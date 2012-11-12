@@ -72,11 +72,11 @@ int main(int argc, const char * argv[])
     X.load("./X.dat", raw_ascii);
     y.load("./Y.dat", raw_ascii);
 
+	X/=255.0f;
+
 	for (unsigned int i = 0 ; i < y.n_elem ; i++)
 		if (y(i) == 10)
 			y(i) = 0;
-
-	X = X/255;
 
 	//add bias unit
 	fmat one_vector = ones<fmat>(X.n_rows/2,1);
@@ -90,23 +90,27 @@ int main(int argc, const char * argv[])
 
 	fmat one_vector2 = ones<fmat>(X.n_rows,1);
 	X = join_rows(one_vector2, X);
-    //int M, N, Q; // rows, cols, grayscale
-    //bool type;
+
+	fmat testRow;
+    int M, N, Q; // rows, cols, grayscale
+    bool type;
 
 	// read image header
-    //Image::readImageHeader("./seven.PGM", N, M, Q, type);
+    Image::readImageHeader("./five.pgm", N, M, Q, type);
 
 	// allocate memory for the image array
-	//Image image(N, M, Q);
+	Image image(N, M, Q);
 	// read image
-    //Image::readImage("./seven.PGM", image);
+    Image::readImage("./five.pgm", image);
 
 
-    //fmat imagePixelMatrix = image.getPixelMatrix();
-	//imagePixelMatrix = join_rows(ones<fmat>(1,1), X.row(2256));
+    fmat imagePixelMatrix = image.getPixelMatrix();
+	testRow = join_rows(ones<fmat>(1,1), imagePixelMatrix);
+//	testRow = X.row(3560);
+//	for (int i = 0 ; i < 401 ; i++)
+//		std::cout << testRow(i) << " " << testRow2(i) << std::endl;
 
 	pthread_t thread1, thread2;
-	int testRow = 2300;
 
 	while(1) 
 	{
@@ -139,7 +143,7 @@ int main(int argc, const char * argv[])
 			thetaMatrix1 = *(fmat*)args1.theta;
 			thetaMatrix2 = *(fmat*)args2.theta;
 			fmat allThetaMatrix =  join_cols(thetaMatrix1, thetaMatrix2);
-			prediction = MultiClassClassificator::predictUsingThetaMatrix(allThetaMatrix, X1.row(testRow));
+			prediction = MultiClassClassificator::predictUsingThetaMatrix(allThetaMatrix, testRow);
 
 			end = clock();
 			
@@ -157,7 +161,7 @@ int main(int argc, const char * argv[])
 			int *arrayY2 = convertArmadilloMatrixToNormalArray<int>(y2);
 			float *allThetaArray1 = convertArmadilloMatrixToNormalArray<float>(allTheta1);
 			float *allThetaArray2 = convertArmadilloMatrixToNormalArray<float>(allTheta2);
-			float *X_row = convertArmadilloMatrixToNormalArray<float>(X1.row(testRow));
+			float *X_row = convertArmadilloMatrixToNormalArray<float>(testRow);
 			float *predictVector = new float[10];
 
 			TrainArgsASM *args1 = new TrainArgsASM();
@@ -179,27 +183,14 @@ int main(int argc, const char * argv[])
 			args2->allTheta = allThetaArray2;
 			
 		
-			begin = clock();
-			pthread_attr_t attr;
-			
-			pthread_attr_init(&attr);
-
-			pthread_attr_setstacksize(&attr, 80400000);
-			
-			pthread_create(&thread1,&attr,trainFunction, (void*)args1);
-			pthread_create(&thread2,&attr,trainFunction, (void*)args2);
-//			trainFunction(args1);	
-//			trainFunction(args2);
+			begin = clock();	
+			pthread_create(&thread1,NULL,trainFunction, (void*)args1);
+			pthread_create(&thread2,NULL,trainFunction, (void*)args2);
 			pthread_join(thread1, NULL);
 			pthread_join(thread2, NULL);
-
+			//trainFunction(args1);
+			//trainFunction(args2);
 			//merging allthetaarray
-			
-	//		porownaj(thetaMatrix1, allThetaArray1);
-
-		//	return 0;
-
-
 			float *allTheta = new float[10*401];
 			float *copyArray = allThetaArray1;
 			int counter;

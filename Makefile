@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -g -O0 -m32 
+CFLAGS=-Wall -g -O0 -m32 -fopenmp 
 LDFLAGS= -Wl,-m,elf_i386,-lpthread,-larmadillo,-lstdc++,-ldl,-lm
 SOURCES=Image.cpp main.cpp MultiClassClassificator.cpp 
 SOURCESASM = MultiClassClassificator.asm

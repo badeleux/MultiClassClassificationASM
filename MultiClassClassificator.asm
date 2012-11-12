@@ -26,22 +26,22 @@ powerFunction:
 	fldcw WORD[ebp-2]
 
 
-	fld dword[ebp+8]
-	fld dword[ebp+12]
+	fld dword[ebp+8] ;zaladowanie wykladnika
+	fld dword[ebp+12] ; zaladowanie podstawy
 
-	fyl2x
+	fyl2x ; logarytmowanie
 
-	fist dword[ebp - 6]
-	fild dword[ebp - 6]
-	fsub
+	fist dword[ebp - 6] ;wynik z obcieta czescia ulamkowa do pamieci
+	fild dword[ebp - 6] ; liczba calkowita z powrotem na stos
+	fsub ; w st0 mamy czesc ulamkowa
 
 
-	f2xm1
+	f2xm1 ; 2^x - 1
 	fld1
-	fadd
-	fild dword[ebp-6]
-	fxch
-	fscale
+	fadd ; dodajemy jedynke
+	fild dword[ebp-6] ; ladujemy czesc calkowita
+	fxch ; zamieniamy st0 z st1
+	fscale ; mnozymy 2^x * 2^y
 	
 	mov ebx, dword[ebp+16]
 	fst DWORD[ebx]
@@ -143,6 +143,7 @@ transposeMatrix:
 	push eax
 	push edx
 	
+
 	mov eax, dword[ebp+20]
 
 	mov ebx, 4
@@ -268,6 +269,7 @@ multiplyMatrices:
 
 	pierwszeMnozenie2:	
 		mov ecx, ebx
+		je next_rowY
 	petlaMnozenia2:
 		movss xmm0, [esi]
 		movss xmm1, [edi]
@@ -379,6 +381,7 @@ wyzerujWektor:
 ;siodmy par. to wskaznik do allTheta (wyjsciowa tablica) [ebp + 24]
 trainThetaMatrix:
 	;prolog
+	
 	push ebp
 	mov ebp, esp
 	push ebx ; jesli by tego nie bylo dostajemy segmentation fault przy uruchomieniu watku!!!	
@@ -389,7 +392,8 @@ trainThetaMatrix:
 	mov eax, [ebp+4]
 	mov [ebx + EBP_PTR wrt ..gotoff], esp
 	mov ebp, [ebp+8]
-
+	
+	
 	;rezerwacja pamieci
 	mov eax, [ebp+4]
 	mov edx, [ebp+8]
@@ -397,9 +401,7 @@ trainThetaMatrix:
 	zarezerwujPamiec eax
 	mov eax, esp
 
-
 	mov [ebx + X_t wrt ..gotoff], esp ; zapisanie do xmiennej X_t 
-	
 	
 	;transponowanie macierzy X
 	push dword[ebp + 8]
@@ -408,20 +410,19 @@ trainThetaMatrix:
 	push eax
 	call transposeMatrix
 
-
 	mov eax, [ebp+4]
 	zarezerwujPamiec eax
 	mov [ebx + MULTIPLY_PTR wrt ..gotoff], esp
 	
 	mov ecx, dword [ebp+16]
 
-
+	mov eax, [ebp + 4]
+	zarezerwujPamiec eax ;rezerwacja pamieci 1x5000
+	mov [ebx + TEMP_PTR wrt ..gotoff], esp
+	
 	petla_liczba_klas: ;lecimy od from->to 
 		mov [ebx + CURRENT_INDEX wrt ..gotoff], ecx		
-
-		mov eax, [ebp + 4]
-		zarezerwujPamiec eax ;rezerwacja pamieci 1x5000
-		mov edx, esp ; w edx wskaznik na ten wektor
+		mov edx, [ebx + TEMP_PTR wrt ..gotoff]
 
 		mov ecx, dword 50 ; liczba iteracji ustawiona na sztywno
 			petla_iteracje:
@@ -446,8 +447,6 @@ trainThetaMatrix:
 				call sigmoidFunction ; wynik jest w edx
 				lea esp, [esp+12] ; kasujemy stos
 			
-				mov eax, [edx + 9600]
-
 				;zczytujemy tablice y, jesli element tablicy y == ecx to odejmij 1 od tablicy ktora mamy w edx
 				mov ecx, [ebp+4]
 				mov esi, [ebp+12] ; wskaznik na y
@@ -542,7 +541,7 @@ farJumpToPetlaIteracje:
 	jmp petla_iteracje
 
 section .data
-	testowa dd 0
+	TEMP_PTR dd 0
 	EBP_PTR dd 0	
 	EULER_NUMBER dd 0x402DF854
 	X_t dd 0
