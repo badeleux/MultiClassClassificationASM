@@ -384,13 +384,23 @@ trainThetaMatrix:
 	
 	push ebp
 	mov ebp, esp
+
 	push ebx ; jesli by tego nie bylo dostajemy segmentation fault przy uruchomieniu watku!!!	
 
 
 	;operacje niezbedne podczas gdy mamy strukture
-	wez_GOT
-	mov eax, [ebp+4]
-	mov [ebx + EBP_PTR wrt ..gotoff], esp
+
+	push dword 0 ; temp_ptr [ebx + 20]
+	push dword 0 ; ebp_ptr [ebx + 16]
+	push dword 0x402DF854 ; euler_number [ebx + 12]
+	push dword 0 ;X_t [ebx+8]
+	push dword 0 ;current_index [ebx + 4]
+	push dword 0 ;multiply_ptr [ebx]
+	mov ebx, esp
+
+	;wez_GOT
+	;mov eax, [ebp+4]
+	mov [ebx + 16], esp
 	mov ebp, [ebp+8]
 	
 	
@@ -401,7 +411,7 @@ trainThetaMatrix:
 	zarezerwujPamiec eax
 	mov eax, esp
 
-	mov [ebx + X_t wrt ..gotoff], esp ; zapisanie do xmiennej X_t 
+	mov [ebx + 8], esp ; zapisanie do xmiennej X_t 
 	
 	;transponowanie macierzy X
 	push dword[ebp + 8]
@@ -412,17 +422,17 @@ trainThetaMatrix:
 
 	mov eax, [ebp+4]
 	zarezerwujPamiec eax
-	mov [ebx + MULTIPLY_PTR wrt ..gotoff], esp
+	mov [ebx], esp
 	
 	mov ecx, dword [ebp+16]
 
 	mov eax, [ebp + 4]
 	zarezerwujPamiec eax ;rezerwacja pamieci 1x5000
-	mov [ebx + TEMP_PTR wrt ..gotoff], esp
+	mov [ebx + 20], esp
 	
 	petla_liczba_klas: ;lecimy od from->to 
-		mov [ebx + CURRENT_INDEX wrt ..gotoff], ecx		
-		mov edx, [ebx + TEMP_PTR wrt ..gotoff]
+		mov [ebx + 4], ecx		
+		mov edx, [ebx + 20]
 
 		mov ecx, dword 50 ; liczba iteracji ustawiona na sztywno
 			petla_iteracje:
@@ -439,8 +449,8 @@ trainThetaMatrix:
 
 				;liczenie sigmoid function
 				mov ecx, [ebp+4]
-				wez_GOT
-				lea eax, [ebx + EULER_NUMBER wrt ..gotoff] 
+	;			wez_GOT
+				lea eax, [ebx + 12] 
 				push eax
 				push edx
 				push edx
@@ -453,7 +463,7 @@ trainThetaMatrix:
 				mov edi, edx
 				petlaOdejmujaca:
 					mov eax, [esi]
-					cmp eax, [ebx+ CURRENT_INDEX wrt ..gotoff]
+					cmp eax, [ebx+ 4]
 					jne nextElement
 					fld1
 					fsubr dword[edi]
@@ -465,14 +475,14 @@ trainThetaMatrix:
 				
 
 				;rezerwacja pamieci na mnozenie (sigmoid(somedata) - y).t() * X
-				mov eax, [ebx + MULTIPLY_PTR wrt ..gotoff]
+				mov eax, [ebx]
 
 				;mnozenie: 
 				push dword[ebp + 8] ; liczba wierszy drugiej macierzy
 				push dword[ebp + 4] ; liczba kolumn pierwszej macierzy
 				push dword 1 ; liczba wierszy pierwszej macierzy
 				push eax
-				push dword[ebx + X_t wrt ..gotoff]
+				push dword[ebx + 8]
 				push edx
 				call multiplyMatrices
 				lea esp, [esp + 24]
@@ -500,7 +510,7 @@ trainThetaMatrix:
 		add eax,[ebp+24]
 		mov [ebp+24], eax
 	
-		mov ecx, [ebx + CURRENT_INDEX wrt ..gotoff]
+		mov ecx, [ebx + 4]
 		inc ecx
 		mov eax, dword [ebp+20]
 		cmp ecx, eax
@@ -508,7 +518,8 @@ trainThetaMatrix:
 	jmp petla_liczba_klas
 
 epilog:
-	mov esp, [ebx + EBP_PTR wrt ..gotoff]
+	mov esp, [ebx + 16]
+	lea esp, [esp+24]
 	pop ebx
 	pop ebp
 	ret

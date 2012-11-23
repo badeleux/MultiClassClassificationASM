@@ -14,6 +14,9 @@
 #include "MultiClassClassificator.h"
 #include <ctime>
 #include <iomanip>
+#include <fstream>
+#include <sstream>
+
 using namespace std;
 
 
@@ -70,6 +73,26 @@ int main(int argc, const char * argv[])
 									//load training set
     fmat X, y;
     X.load("./X.dat", raw_ascii);
+
+
+	for (int i = 0 ; i < X.n_rows ; i++)
+	{
+		string fileName;
+		stringstream out;
+		out << i; 
+		fileName = "./digits/" + out.str() + ".pgm";
+		ofstream file(fileName.c_str(), ios::binary);
+		file << "P5"<< endl;
+		file << 20 << " " << 20 << endl;
+		file << 255 << endl;
+		for (int j = 0 ; j < X.n_cols ; j++)
+		{
+			char c = X(i,j);
+			file << c;	
+		}
+		file.close();
+	}	
+
     y.load("./Y.dat", raw_ascii);
 
 	X/=255.0f;
@@ -96,20 +119,20 @@ int main(int argc, const char * argv[])
     bool type;
 
 	// read image header
-    Image::readImageHeader("./five.pgm", N, M, Q, type);
+    Image::readImageHeader("./eight.pgm", N, M, Q, type);
 
 	// allocate memory for the image array
 	Image image(N, M, Q);
 	// read image
-    Image::readImage("./five.pgm", image);
+    Image::readImage("./eight.pgm", image);
 
 
     fmat imagePixelMatrix = image.getPixelMatrix();
 	testRow = join_rows(ones<fmat>(1,1), imagePixelMatrix);
-//	testRow = X.row(3560);
-//	for (int i = 0 ; i < 401 ; i++)
-//		std::cout << testRow(i) << " " << testRow2(i) << std::endl;
-
+//	testRow = X.row(360);
+	
+	
+	
 	pthread_t thread1, thread2;
 
 	while(1) 
