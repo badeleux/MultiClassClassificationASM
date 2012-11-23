@@ -2,5 +2,8 @@
 *.so
 *.swp
 *.cproject
+*.swn
+*.swm
+*.swo
 .DS_Store
 .project
