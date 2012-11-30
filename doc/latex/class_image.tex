@@ -1,0 +1,266 @@
+\hypertarget{class_image}{\section{Image Class Reference}
+\label{class_image}\index{Image@{Image}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_image_a58edd1c45b4faeb5f789b0d036d02313}{Image} ()
+\item 
+\hyperlink{class_image_a92270fcd911d00f7755dc9ca35ef8f0b}{Image} (int num\-Rows, int num\-Cols, int gray\-Levels)
+\item 
+\hyperlink{class_image_a0294f63700543e11c0f0da85601c7ae5}{$\sim$\-Image} ()
+\item 
+void \hyperlink{class_image_a1099139cd7f3d212d57e9e8ce3e67a4d}{operator=} (const \hyperlink{class_image}{Image} \&)
+\item 
+void \hyperlink{class_image_af740f15bc8d30ee414049d5cb040cabd}{set\-Image\-Info} (int num\-Rows, int num\-Cols, int max\-Val)
+\item 
+void \hyperlink{class_image_a543e422a7edacaa55830dbd48a0f0957}{get\-Image\-Info} (int \&num\-Rows, int \&num\-Cols, int \&max\-Val)
+\item 
+int \hyperlink{class_image_a4ea2c59a4589aa328651eb035950b11c}{get\-Pixel\-Val} (int row, int col)
+\item 
+fmat \hyperlink{class_image_a925af65e2cadcf192f5cfa4ca22c0f2d}{get\-Pixel\-Matrix} ()
+\item 
+void \hyperlink{class_image_a430700d765365908172a3618daffd1ef}{set\-Pixel\-Val} (int row, int col, int value)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static int \hyperlink{class_image_a5b2753a2cb9c53a7fa884f09a625098f}{read\-Image\-Header} (char\mbox{[}$\,$\mbox{]}, int \&, int \&, int \&, bool \&)
+\item 
+static int \hyperlink{class_image_a63b87c82bcfe8e4a108bc2117439239b}{read\-Image} (char\mbox{[}$\,$\mbox{]}, \hyperlink{class_image}{Image} \&)
+\item 
+static int \hyperlink{class_image_a43975d2642ebd2c7df1fedb409b6e043}{write\-Image} (char\mbox{[}$\,$\mbox{]}, \hyperlink{class_image}{Image} \&)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+ostream \& \hyperlink{class_image_a28b6becd76843753c9993d64db579c60}{operator$<$$<$} (ostream \&os, const \hyperlink{class_image}{Image} \&image)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_image_a58edd1c45b4faeb5f789b0d036d02313}{\index{Image@{Image}!Image@{Image}}
+\index{Image@{Image}!Image@{Image}}
+\subsubsection[{Image}]{\setlength{\rightskip}{0pt plus 5cm}Image\-::\-Image (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_image_a58edd1c45b4faeb5f789b0d036d02313}
+Creates an \hyperlink{class_image}{Image} 0x0 \begin{DoxyReturn}{Returns}
+\hyperlink{class_image}{Image} 
+\end{DoxyReturn}
+\hypertarget{class_image_a92270fcd911d00f7755dc9ca35ef8f0b}{\index{Image@{Image}!Image@{Image}}
+\index{Image@{Image}!Image@{Image}}
+\subsubsection[{Image}]{\setlength{\rightskip}{0pt plus 5cm}Image\-::\-Image (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Rows, }
+\item[{int}]{num\-Cols, }
+\item[{int}]{gray\-Levels}
+\end{DoxyParamCaption}
+)}}\label{class_image_a92270fcd911d00f7755dc9ca35ef8f0b}
+Creates an \hyperlink{class_image}{Image} of num\-Rows x num\-Cols and creates the arrays for it 
+\begin{DoxyParams}{Parameters}
+{\em num\-Rows} & \\
+\hline
+{\em num\-Cols} & \\
+\hline
+{\em gray\-Levels} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{class_image_a0294f63700543e11c0f0da85601c7ae5}{\index{Image@{Image}!$\sim$\-Image@{$\sim$\-Image}}
+\index{$\sim$\-Image@{$\sim$\-Image}!Image@{Image}}
+\subsubsection[{$\sim$\-Image}]{\setlength{\rightskip}{0pt plus 5cm}Image\-::$\sim$\-Image (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_image_a0294f63700543e11c0f0da85601c7ae5}
+destroy image 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_image_a543e422a7edacaa55830dbd48a0f0957}{\index{Image@{Image}!get\-Image\-Info@{get\-Image\-Info}}
+\index{get\-Image\-Info@{get\-Image\-Info}!Image@{Image}}
+\subsubsection[{get\-Image\-Info}]{\setlength{\rightskip}{0pt plus 5cm}void Image\-::get\-Image\-Info (
+\begin{DoxyParamCaption}
+\item[{int \&}]{num\-Rows, }
+\item[{int \&}]{num\-Cols, }
+\item[{int \&}]{max\-Val}
+\end{DoxyParamCaption}
+)}}\label{class_image_a543e422a7edacaa55830dbd48a0f0957}
+returns the number of rows, columns and gray levels 
+\begin{DoxyParams}{Parameters}
+{\em num\-Rows} & \\
+\hline
+{\em num\-Cols} & \\
+\hline
+{\em max\-Val} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_image_a925af65e2cadcf192f5cfa4ca22c0f2d}{\index{Image@{Image}!get\-Pixel\-Matrix@{get\-Pixel\-Matrix}}
+\index{get\-Pixel\-Matrix@{get\-Pixel\-Matrix}!Image@{Image}}
+\subsubsection[{get\-Pixel\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}fmat Image\-::get\-Pixel\-Matrix (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{class_image_a925af65e2cadcf192f5cfa4ca22c0f2d}
+Get pixel V\-E\-C\-T\-O\-R! \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{class_image_a4ea2c59a4589aa328651eb035950b11c}{\index{Image@{Image}!get\-Pixel\-Val@{get\-Pixel\-Val}}
+\index{get\-Pixel\-Val@{get\-Pixel\-Val}!Image@{Image}}
+\subsubsection[{get\-Pixel\-Val}]{\setlength{\rightskip}{0pt plus 5cm}int Image\-::get\-Pixel\-Val (
+\begin{DoxyParamCaption}
+\item[{int}]{row, }
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}\label{class_image_a4ea2c59a4589aa328651eb035950b11c}
+returns the gray value of a specific pixel 
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\hypertarget{class_image_a1099139cd7f3d212d57e9e8ce3e67a4d}{\index{Image@{Image}!operator=@{operator=}}
+\index{operator=@{operator=}!Image@{Image}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}void Image\-::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Image} \&}]{old\-Image}
+\end{DoxyParamCaption}
+)}}\label{class_image_a1099139cd7f3d212d57e9e8ce3e67a4d}
+copies old\-Image into whatever you = it to 
+\begin{DoxyParams}{Parameters}
+{\em Image\&} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_image_a63b87c82bcfe8e4a108bc2117439239b}{\index{Image@{Image}!read\-Image@{read\-Image}}
+\index{read\-Image@{read\-Image}!Image@{Image}}
+\subsubsection[{read\-Image}]{\setlength{\rightskip}{0pt plus 5cm}int Image\-::read\-Image (
+\begin{DoxyParamCaption}
+\item[{char}]{fname\mbox{[}$\,$\mbox{]}, }
+\item[{{\bf Image} \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{class_image_a63b87c82bcfe8e4a108bc2117439239b}
+Read \hyperlink{class_image}{Image} 
+\begin{DoxyParams}{Parameters}
+{\em char} & name of file \\
+\hline
+{\em Image\&} & \hyperlink{class_image}{Image} reference \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if returned 1 all went good 
+\end{DoxyReturn}
+\hypertarget{class_image_a5b2753a2cb9c53a7fa884f09a625098f}{\index{Image@{Image}!read\-Image\-Header@{read\-Image\-Header}}
+\index{read\-Image\-Header@{read\-Image\-Header}!Image@{Image}}
+\subsubsection[{read\-Image\-Header}]{\setlength{\rightskip}{0pt plus 5cm}int Image\-::read\-Image\-Header (
+\begin{DoxyParamCaption}
+\item[{char}]{fname\mbox{[}$\,$\mbox{]}, }
+\item[{int \&}]{N, }
+\item[{int \&}]{M, }
+\item[{int \&}]{Q, }
+\item[{bool \&}]{type}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{class_image_a5b2753a2cb9c53a7fa884f09a625098f}
+Read image header 
+\begin{DoxyParams}{Parameters}
+{\em char} & name of file \\
+\hline
+{\em int\&} & reference to number of rows \\
+\hline
+{\em int\&} & reference to number of cols \\
+\hline
+{\em int\&} & reference to gray scale \\
+\hline
+{\em bool\&} & reference to type bool \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if returned 1 all went good 
+\end{DoxyReturn}
+\hypertarget{class_image_af740f15bc8d30ee414049d5cb040cabd}{\index{Image@{Image}!set\-Image\-Info@{set\-Image\-Info}}
+\index{set\-Image\-Info@{set\-Image\-Info}!Image@{Image}}
+\subsubsection[{set\-Image\-Info}]{\setlength{\rightskip}{0pt plus 5cm}void Image\-::set\-Image\-Info (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Rows, }
+\item[{int}]{num\-Cols, }
+\item[{int}]{max\-Val}
+\end{DoxyParamCaption}
+)}}\label{class_image_af740f15bc8d30ee414049d5cb040cabd}
+sets the number of rows, columns and graylevels 
+\begin{DoxyParams}{Parameters}
+{\em num\-Rows} & \\
+\hline
+{\em num\-Cols} & \\
+\hline
+{\em max\-Val} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_image_a430700d765365908172a3618daffd1ef}{\index{Image@{Image}!set\-Pixel\-Val@{set\-Pixel\-Val}}
+\index{set\-Pixel\-Val@{set\-Pixel\-Val}!Image@{Image}}
+\subsubsection[{set\-Pixel\-Val}]{\setlength{\rightskip}{0pt plus 5cm}void Image\-::set\-Pixel\-Val (
+\begin{DoxyParamCaption}
+\item[{int}]{row, }
+\item[{int}]{col, }
+\item[{int}]{value}
+\end{DoxyParamCaption}
+)}}\label{class_image_a430700d765365908172a3618daffd1ef}
+sets the gray value of a specific pixel 
+\begin{DoxyParams}{Parameters}
+{\em row} & \\
+\hline
+{\em col} & \\
+\hline
+{\em value} & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_image_a43975d2642ebd2c7df1fedb409b6e043}{\index{Image@{Image}!write\-Image@{write\-Image}}
+\index{write\-Image@{write\-Image}!Image@{Image}}
+\subsubsection[{write\-Image}]{\setlength{\rightskip}{0pt plus 5cm}int Image\-::write\-Image (
+\begin{DoxyParamCaption}
+\item[{char}]{fname\mbox{[}$\,$\mbox{]}, }
+\item[{{\bf Image} \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{class_image_a43975d2642ebd2c7df1fedb409b6e043}
+Write to \hyperlink{class_image}{Image} 
+\begin{DoxyParams}{Parameters}
+{\em char} & name of image \\
+\hline
+{\em Image\&} & \hyperlink{class_image}{Image} to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+if returned 1 all went good 
+\end{DoxyReturn}
+
+
+\subsection{Friends And Related Function Documentation}
+\hypertarget{class_image_a28b6becd76843753c9993d64db579c60}{\index{Image@{Image}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Image@{Image}}
+\subsubsection[{operator$<$$<$}]{\setlength{\rightskip}{0pt plus 5cm}ostream\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{ostream \&}]{os, }
+\item[{const {\bf Image} \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [friend]}}}\label{class_image_a28b6becd76843753c9993d64db579c60}
+read image from file 
+\begin{DoxyParams}{Parameters}
+{\em os} & \\
+\hline
+{\em image} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/Image.\-h\item 
+src/Image.\-cpp\end{DoxyCompactItemize}

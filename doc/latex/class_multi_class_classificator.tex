@@ -1,0 +1,61 @@
+\hypertarget{class_multi_class_classificator}{\section{Multi\-Class\-Classificator Class Reference}
+\label{class_multi_class_classificator}\index{Multi\-Class\-Classificator@{Multi\-Class\-Classificator}}
+}
+
+
+{\ttfamily \#include $<$Multi\-Class\-Classificator.\-h$>$}
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void $\ast$ \hyperlink{class_multi_class_classificator_a4eda8cb5f03c85a12864b1d1eef59ff1}{train\-Theta\-Matrix} (void $\ast$\hyperlink{structargs}{args})
+\item 
+static int \hyperlink{class_multi_class_classificator_a8ad5aa7fd468ab871c422b2f84d02c88}{predict\-Using\-Theta\-Matrix} (fmat all\-Theta, fmat X)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+It is a class which handles all of calculations. This class uses Armadillo library to make linear algebra calculations. 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_multi_class_classificator_a8ad5aa7fd468ab871c422b2f84d02c88}{\index{Multi\-Class\-Classificator@{Multi\-Class\-Classificator}!predict\-Using\-Theta\-Matrix@{predict\-Using\-Theta\-Matrix}}
+\index{predict\-Using\-Theta\-Matrix@{predict\-Using\-Theta\-Matrix}!MultiClassClassificator@{Multi\-Class\-Classificator}}
+\subsubsection[{predict\-Using\-Theta\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}int Multi\-Class\-Classificator\-::predict\-Using\-Theta\-Matrix (
+\begin{DoxyParamCaption}
+\item[{fmat}]{all\-Theta, }
+\item[{fmat}]{X}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{class_multi_class_classificator_a8ad5aa7fd468ab871c422b2f84d02c88}
+This method return prediction for given trained matrix 
+\begin{DoxyParams}{Parameters}
+{\em all\-Theta} & Trained theta Matrix it should be of size\-: Mx\-N \\
+\hline
+{\em X} & matrix it should be of size\-: 1x\-N \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+prediction -\/ which class is the most predictable 
+\end{DoxyReturn}
+\hypertarget{class_multi_class_classificator_a4eda8cb5f03c85a12864b1d1eef59ff1}{\index{Multi\-Class\-Classificator@{Multi\-Class\-Classificator}!train\-Theta\-Matrix@{train\-Theta\-Matrix}}
+\index{train\-Theta\-Matrix@{train\-Theta\-Matrix}!MultiClassClassificator@{Multi\-Class\-Classificator}}
+\subsubsection[{train\-Theta\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ Multi\-Class\-Classificator\-::train\-Theta\-Matrix (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{args}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}}\label{class_multi_class_classificator_a4eda8cb5f03c85a12864b1d1eef59ff1}
+train\-Theta\-Matrix is ready for running on two cores, this is the reason why to param you should pass one parameter
+\begin{DoxyItemize}
+\item pointer to structure.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em args} & is an struct of type Train\-Args. Look at \hyperlink{_common_8h_source}{Common.\-h} \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/Multi\-Class\-Classificator.\-h\item 
+src/Multi\-Class\-Classificator.\-cpp\end{DoxyCompactItemize}
