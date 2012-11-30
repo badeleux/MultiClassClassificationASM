@@ -1,24 +1,10 @@
-CC=gcc
-CFLAGS=-Wall -g -O0 -m32 -fopenmp 
-LDFLAGS= -Wl,-m,elf_i386,-lpthread,-larmadillo,-lstdc++,-ldl,-lm
-SOURCES=Image.cpp main.cpp MultiClassClassificator.cpp 
-SOURCESASM = MultiClassClassificator.asm
-OBJECTSASM=$(SOURCESASM:.asm=.o)
-EXECUTABLE=Predict
-LIBRARY=libclass.so
+SRCCAT = src
+DOCCAT = doc
 
-all: $(SOURCES) $(EXECUTABLE) $(LIBRARY)
+all: sources
 
-
-
-$(LIBRARY):$(OBJECTSASM)
-	ld -shared $(OBJECTSASM) -o $@ -m elf_i386
-
-$(OBJECTSASM):$(SOURCESASM)
-	nasm -O1 -f elf -g -F dwarf $< -o $@
-
-
-
-
-$(EXECUTABLE):$(SOURCES)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o $@
+sources: 
+	make --directory=$(SRCCAT)
+doc:
+	cd doc
+	doxygen
