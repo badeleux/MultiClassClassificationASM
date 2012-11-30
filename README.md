@@ -1,7 +1,8 @@
 
-                         # MultiClassClassificator
-
- ## What is it?
+                          MultiClassClassificator
+						  =======================
+	What is it?
+	===========
 
 	MultiClassClassificator is a simple application of Machine Learning. Project in his assumptions should recognize digits which are presented on PGM files. In fact splitting training set on training and testing set (70% for training and 30% for testing), I have got about 76% accuracy. It is not even a good result. I think there are two reasons why result is so poor - firstly, method Logic Regression with gradient descent, secondly lambda parameter. I am sure that if you choose a good lambda parameter results will be much much better.
 
