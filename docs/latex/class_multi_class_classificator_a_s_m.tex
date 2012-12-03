@@ -1,0 +1,185 @@
+\hypertarget{class_multi_class_classificator_a_s_m}{\section{Multi\-Class\-Classificator\-A\-S\-M Class Reference}
+\label{class_multi_class_classificator_a_s_m}\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}}
+}
+
+
+{\ttfamily \#include $<$Multi\-Class\-Classificator-\/asm.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_a90fa2bf0546813be26b28322101bc865}{multiply\-Matrices} (pierwszy, drugi, trzeci, czwarty, piaty, szosty)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}{power\-Function} (pierwszym, drugi)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}{power\-Function} (pierwszym, drugi)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_a2fa9bb7af0fd5963b189495ce5f9e016}{predict\-Using\-Theta\-Matrix} (\mbox{[}ebp,\mbox{[}ebp,\mbox{[}ebp,\mbox{[}ebp,\mbox{[}ebp)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_ab08b099d46e5c47695f389cedf25e8b3}{sigmoid\-Function} (pierwszy, drugi, trzeci)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_a456f3c0e41414ccaddbf0f5492a2c14a}{train\-Theta\-Matrix} (pierwszy, drugi, trzeci, czwarty, piaty, szosty, siodmy)
+\item 
+void \hyperlink{class_multi_class_classificator_a_s_m_aafd1d8c2b655d342b9a37be4b740370f}{transpose\-Matrix} (ebp, ebp, ebp, ebp)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\hyperlink{class_multi_class_classificator}{Multi\-Class\-Classificator} implemented in A\-S\-M 
+
+\subsection{Member Function Documentation}
+\hypertarget{class_multi_class_classificator_a_s_m_a90fa2bf0546813be26b28322101bc865}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!multiply\-Matrices@{multiply\-Matrices}}
+\index{multiply\-Matrices@{multiply\-Matrices}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{multiply\-Matrices}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::multiply\-Matrices (
+\begin{DoxyParamCaption}
+\item[{pierwszy}]{, }
+\item[{drugi}]{, }
+\item[{trzeci}]{, }
+\item[{czwarty}]{, }
+\item[{piaty}]{, }
+\item[{szosty}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_a90fa2bf0546813be26b28322101bc865}
+mnozene Z = X $\ast$ Y gdzie X jest macierza (n x m), a Y jest macierza (l x m) 
+\begin{DoxyParams}{Parameters}
+{\em pierwszy} & par -\/ wskaznik do tablicy X \mbox{[}ebp + 8\mbox{]} \\
+\hline
+{\em drugi} & par -\/ wskaznik do tablicy Y \mbox{[}ebp + 12\mbox{]} \\
+\hline
+{\em trzeci} & par -\/ wskaznik do tablicy Z \mbox{[}ebp + 16\mbox{]} \\
+\hline
+{\em czwarty} & par -\/ n -\/ liczba wierszy X \mbox{[}ebp + 20\mbox{]} \\
+\hline
+{\em piaty} & par -\/ m liczba kolumn X \mbox{[}ebp + 24 \mbox{]} \\
+\hline
+{\em szosty} & par -\/ l liczba wierszy Y \mbox{[}ebp + 28\mbox{]} \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!power\-Function@{power\-Function}}
+\index{power\-Function@{power\-Function}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{power\-Function}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::power\-Function (
+\begin{DoxyParamCaption}
+\item[{pierwszym}]{, }
+\item[{drugi}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}
+makro rezerwujace pamiec w 
+\begin{DoxyParams}{Parameters}
+{\em pierwszym} & parametrze przekazujemy ile elementow tablicy dword chcemy \\
+\hline
+{\em drugi} & parametr to miejsce gdzie zapisac adres do tablicy \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!power\-Function@{power\-Function}}
+\index{power\-Function@{power\-Function}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{power\-Function}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::power\-Function (
+\begin{DoxyParamCaption}
+\item[{pierwszym}]{, }
+\item[{drugi}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_af2caef1f8bd96734ce3bae7a510c8db8}
+makro rezerwujace pamiec w 
+\begin{DoxyParams}{Parameters}
+{\em pierwszym} & parametrze przekazujemy ile elementow tablicy dword chcemy \\
+\hline
+{\em drugi} & parametr to miejsce gdzie zapisac adres do tablicy \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_a2fa9bb7af0fd5963b189495ce5f9e016}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!predict\-Using\-Theta\-Matrix@{predict\-Using\-Theta\-Matrix}}
+\index{predict\-Using\-Theta\-Matrix@{predict\-Using\-Theta\-Matrix}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{predict\-Using\-Theta\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::predict\-Using\-Theta\-Matrix (
+\begin{DoxyParamCaption}
+\item[{\mbox{[}}]{ebp, }
+\item[{\mbox{[}}]{ebp, }
+\item[{\mbox{[}}]{ebp, }
+\item[{\mbox{[}}]{ebp, }
+\item[{\mbox{[}}]{ebp}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_a2fa9bb7af0fd5963b189495ce5f9e016}
+
+\begin{DoxyParams}{Parameters}
+{\em \mbox{[}ebp+8\mbox{]}} & X.\-row \\
+\hline
+{\em \mbox{[}ebp+12\mbox{]}} & all\-Theta \\
+\hline
+{\em \mbox{[}ebp+16\mbox{]}} & predict\-Vector \\
+\hline
+{\em \mbox{[}ebp+20\mbox{]}} & all\-Theta\-\_\-rows \\
+\hline
+{\em \mbox{[}ebp+24\mbox{]}} & all\-Theta\-\_\-cols \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_ab08b099d46e5c47695f389cedf25e8b3}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!sigmoid\-Function@{sigmoid\-Function}}
+\index{sigmoid\-Function@{sigmoid\-Function}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{sigmoid\-Function}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::sigmoid\-Function (
+\begin{DoxyParamCaption}
+\item[{pierwszy}]{, }
+\item[{drugi}]{, }
+\item[{trzeci}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_ab08b099d46e5c47695f389cedf25e8b3}
+funkcja do liczenia funkcji sigmoid 
+\begin{DoxyParams}{Parameters}
+{\em pierwszy} & parametr to tablica z (w ecx liczba elementow) \mbox{[}esp + 8\mbox{]} \\
+\hline
+{\em drugi} & parametr to adres do nowej macierzy \mbox{[}esp+12\mbox{]} \\
+\hline
+{\em trzeci} & par to adres do liczby eulera \mbox{[}esp+16\mbox{]} \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_a456f3c0e41414ccaddbf0f5492a2c14a}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!train\-Theta\-Matrix@{train\-Theta\-Matrix}}
+\index{train\-Theta\-Matrix@{train\-Theta\-Matrix}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{train\-Theta\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::train\-Theta\-Matrix (
+\begin{DoxyParamCaption}
+\item[{pierwszy}]{, }
+\item[{drugi}]{, }
+\item[{trzeci}]{, }
+\item[{czwarty}]{, }
+\item[{piaty}]{, }
+\item[{szosty}]{, }
+\item[{siodmy}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_a456f3c0e41414ccaddbf0f5492a2c14a}
+parametry opisane w tej funkcji należą do struktury, której wskaźnik jest pierwszym parametrem 
+\begin{DoxyParams}{Parameters}
+{\em pierwszy} & parametr to wskaznik na tablice X \mbox{[}ebp\mbox{]} \\
+\hline
+{\em drugi} & parametr to liczba wierszy w tablicy X \mbox{[}ebp + 4\mbox{]} \\
+\hline
+{\em trzeci} & parametr to liczba kolumn w tablicy X \mbox{[}ebp + 8\mbox{]} \\
+\hline
+{\em czwarty} & parametr to wskaznik na tablice Y \mbox{[}ebp + 12\mbox{]} \\
+\hline
+{\em piaty} & parametr to parametr from \mbox{[}ebp+ 16\mbox{]} \\
+\hline
+{\em szosty} & par. to parametr to \mbox{[}ebp + 20\mbox{]} \\
+\hline
+{\em siodmy} & par. to wskaznik do all\-Theta (wyjsciowa tablica) \mbox{[}ebp + 24\mbox{]} \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_multi_class_classificator_a_s_m_aafd1d8c2b655d342b9a37be4b740370f}{\index{Multi\-Class\-Classificator\-A\-S\-M@{Multi\-Class\-Classificator\-A\-S\-M}!transpose\-Matrix@{transpose\-Matrix}}
+\index{transpose\-Matrix@{transpose\-Matrix}!MultiClassClassificatorASM@{Multi\-Class\-Classificator\-A\-S\-M}}
+\subsubsection[{transpose\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}void Multi\-Class\-Classificator\-A\-S\-M\-::transpose\-Matrix (
+\begin{DoxyParamCaption}
+\item[{ebp}]{, }
+\item[{ebp}]{, }
+\item[{ebp}]{, }
+\item[{ebp}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}}\label{class_multi_class_classificator_a_s_m_aafd1d8c2b655d342b9a37be4b740370f}
+funkcja transponujaca macierz 
+\begin{DoxyParams}{Parameters}
+{\em ebp+8} & adres do pierwszego elementu tablicy gdzie zapisac nowa macierz \\
+\hline
+{\em ebp+12} & adres do pierwszego element tablicy do transponowania \\
+\hline
+{\em ebp+16} & liczba wierszy \\
+\hline
+{\em ebp+20} & liczba kolumn \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+src/Multi\-Class\-Classificator-\/asm.\-h\end{DoxyCompactItemize}

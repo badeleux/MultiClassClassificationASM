@@ -70,25 +70,7 @@ int main(int argc, const char * argv[])
 {
     void *handle;
 	char *error;
-	char pgmFileName[1024];
-	bool testMode = false;
-	if (argc > 1)
-	{
-		int i = 0;
-		//check fileName
-		if (!testMode)
-		{
-			i = 0;
-			pgmFileName[0] = '.';
-			pgmFileName[1] = '/';
-			while(argv[1][i] != '\0')
-			{
-				pgmFileName[2+i] = argv[1][i];
-				i++;
-			}
-			pgmFileName[2+i] = '\0';
-		}
-	}
+
 	
 	//get handle for dynamic library 
     handle = dlopen("../bin/libclass.so", RTLD_LAZY);
@@ -144,8 +126,8 @@ int main(int argc, const char * argv[])
 
 
     Image image(N, M, Q);
-	Image::readImageHeader(pgmFileName, N, M, Q, type);
-    Image::readImage(pgmFileName, image);
+	Image::readImageHeader(argv[1], N, M, Q, type);
+    Image::readImage(argv[1], image);
 
 
     fmat imagePixelMatrix = image.getPixelMatrix();
