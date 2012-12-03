@@ -17,7 +17,9 @@ Installation
 ------------
 
 `cd ~/Documents`
+
 `git clone https://github.com/badeleux/MultiClassClassificationASM.git`
+
 `cd MultiClassClassificationASM/`
 
 To compile application you need:
