@@ -1,0 +1,65 @@
+\hypertarget{main_8cpp}{\section{src/main.cpp File Reference}
+\label{main_8cpp}\index{src/main.\-cpp@{src/main.\-cpp}}
+}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$cstdio$>$}\\*
+{\ttfamily \#include $<$cstdlib$>$}\\*
+{\ttfamily \#include $<$dlfcn.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}Image.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}Multi\-Class\-Classificator.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$ctime$>$}\\*
+{\ttfamily \#include $<$iomanip$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$sstream$>$}\\*
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{main_8cpp_aa8517c5c4bb542ebf4af42d59d76f236}{typedef void $\ast$($\ast$ {\bfseries train\-Theta\-Matrix} )(void $\ast$)}\label{main_8cpp_aa8517c5c4bb542ebf4af42d59d76f236}
+
+\item 
+\hypertarget{main_8cpp_a74091bc41f02fb5f638d1b99050beeb6}{typedef unsigned int($\ast$ {\bfseries predict\-Using\-Theta\-Matrix} )(float $\ast$, float $\ast$, float $\ast$, int, int)}\label{main_8cpp_a74091bc41f02fb5f638d1b99050beeb6}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class T $>$ }\\T $\ast$ \hyperlink{main_8cpp_aad196b73c2b3cd852fddbe14e64b0f4b}{convert\-Armadillo\-Matrix\-To\-Normal\-Array} (fmat matrix)
+\item 
+int \hyperlink{main_8cpp_ac0f2228420376f4db7e1274f2b41667c}{main} (int argc, const char $\ast$argv\mbox{[}$\,$\mbox{]})
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{main_8cpp_aad196b73c2b3cd852fddbe14e64b0f4b}{\index{main.\-cpp@{main.\-cpp}!convert\-Armadillo\-Matrix\-To\-Normal\-Array@{convert\-Armadillo\-Matrix\-To\-Normal\-Array}}
+\index{convert\-Armadillo\-Matrix\-To\-Normal\-Array@{convert\-Armadillo\-Matrix\-To\-Normal\-Array}!main.cpp@{main.\-cpp}}
+\subsubsection[{convert\-Armadillo\-Matrix\-To\-Normal\-Array}]{\setlength{\rightskip}{0pt plus 5cm}template$<$class T $>$ T$\ast$ convert\-Armadillo\-Matrix\-To\-Normal\-Array (
+\begin{DoxyParamCaption}
+\item[{fmat}]{matrix}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_aad196b73c2b3cd852fddbe14e64b0f4b}
+Converts armadillo matrix to normal c Matrix. It is mainly used for passing c array to assembler. 
+\begin{DoxyParams}{Parameters}
+{\em matrix} & armadillo matrix \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+pointer to c array 
+\end{DoxyReturn}
+\hypertarget{main_8cpp_ac0f2228420376f4db7e1274f2b41667c}{\index{main.\-cpp@{main.\-cpp}!main@{main}}
+\index{main@{main}!main.cpp@{main.\-cpp}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}int main (
+\begin{DoxyParamCaption}
+\item[{int}]{argc, }
+\item[{const char $\ast$}]{argv\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{main_8cpp_ac0f2228420376f4db7e1274f2b41667c}
+Main Function 
+\begin{DoxyParams}{Parameters}
+{\em argc} & arg count \\
+\hline
+{\em argv} & as a first argument please give name of file to classificate. I.\-e. digits/1338.\-pgm \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}

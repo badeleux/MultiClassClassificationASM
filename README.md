@@ -21,9 +21,9 @@ Installation
 `cd MultiClassClassificationASM/`
 
 To compile application you need:
-0. Linux
-1. [Armadillo library][arma] 32BIT
-2. If you are running 64bit system, you probably also need GCC-multilib (or equivalent package for your distro)
+1. Linux
+2. [Armadillo library][arma] 32BIT
+3. If you are running 64bit system, you probably also need GCC-multilib (or equivalent package for your distro)
 
 `make`
 

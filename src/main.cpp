@@ -7,6 +7,10 @@
 //  Copyright (c) 2012 3Soft S.A. All rights reserved.
 
 /**
+ @file main.cpp
+ */
+
+/**
 @mainpage
  This is an simple Machine Learning Application. It is trained by simple Multi Class Classification method, for training function I have used 
  gradient descent method. 

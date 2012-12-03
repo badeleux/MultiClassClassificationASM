@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>MultiClassClassification: src/Common.h Source File</title>
+<title>MultiClassClassifiacator: src/Common.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td style="padding-left: 0.5em;">
-   <div id="projectname">MultiClassClassification
+   <div id="projectname">MultiClassClassifiacator
    </div>
   </td>
  </tr>
@@ -59,6 +59,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="files.html"><span>File&#160;List</span></a></li>
+      <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -66,7 +67,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Friends</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Friends</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -90,27 +91,27 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;/usr/include/armadillo&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00008"></a><span class="lineno"><a class="code" href="structargs.html">    8</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structargs.html">args</a> {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;    <span class="keywordtype">void</span> *X;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    <span class="keywordtype">void</span> *y;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordtype">int</span> from;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keywordtype">int</span> to;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keywordtype">void</span> *theta;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; <span class="keywordtype">void</span> *X;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; <span class="keywordtype">void</span> *y;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; <span class="keywordtype">int</span> from;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; <span class="keywordtype">int</span> to;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; <span class="keywordtype">void</span> *theta;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;} <a class="code" href="structargs.html">TrainArgs</a>;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="code" href="structargs_a_s_m.html">   19</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structargs_a_s_m.html">argsASM</a> {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordtype">float</span> *X;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <span class="keywordtype">int</span> X_row;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <span class="keywordtype">int</span> X_col;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordtype">int</span> *Y;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <span class="keywordtype">int</span> from;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">int</span> to;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordtype">float</span> *allTheta; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; <span class="keywordtype">float</span> *X;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; <span class="keywordtype">int</span> X_row;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keywordtype">int</span> X_col;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; <span class="keywordtype">int</span> *Y;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; <span class="keywordtype">int</span> from;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; <span class="keywordtype">int</span> to;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keywordtype">float</span> *allTheta; </div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;} <a class="code" href="structargs_a_s_m.html">TrainArgsASM</a>;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Nov 30 2012 13:26:35 for MultiClassClassification by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 3 2012 12:47:24 for MultiClassClassifiacator by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.2
 </small></address>

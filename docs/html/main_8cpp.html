@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>MultiClassClassifiacator: MultiClassClassificator Class Reference</title>
+<title>MultiClassClassifiacator: src/main.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -36,8 +36,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
-      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
-      <li><a href="files.html"><span>Files</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -58,9 +58,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
-      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
-      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
-      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+      <li><a href="globals.html"><span>File&#160;Members</span></a></li>
     </ul>
   </div>
 <!-- window showing the filter options -->
@@ -77,46 +76,89 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+</div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="class_multi_class_classificator-members.html">List of all members</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">MultiClassClassificator Class Reference</div>  </div>
+<div class="title">main.cpp File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p><code>#include &lt;<a class="el" href="_multi_class_classificator_8h_source.html">MultiClassClassificator.h</a>&gt;</code></p>
-<table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a4eda8cb5f03c85a12864b1d1eef59ff1"><td class="memItemLeft" align="right" valign="top">static void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multi_class_classificator.html#a4eda8cb5f03c85a12864b1d1eef59ff1">trainThetaMatrix</a> (void *<a class="el" href="structargs.html">args</a>)</td></tr>
-<tr class="separator:a4eda8cb5f03c85a12864b1d1eef59ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ad5aa7fd468ab871c422b2f84d02c88"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_multi_class_classificator.html#a8ad5aa7fd468ab871c422b2f84d02c88">predictUsingThetaMatrix</a> (fmat allTheta, fmat X)</td></tr>
-<tr class="separator:a8ad5aa7fd468ab871c422b2f84d02c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<div class="textblock"><code>#include &lt;iostream&gt;</code><br/>
+<code>#include &lt;cstdio&gt;</code><br/>
+<code>#include &lt;cstdlib&gt;</code><br/>
+<code>#include &lt;dlfcn.h&gt;</code><br/>
+<code>#include &quot;Image.h&quot;</code><br/>
+<code>#include &quot;MultiClassClassificator.h&quot;</code><br/>
+<code>#include &lt;ctime&gt;</code><br/>
+<code>#include &lt;iomanip&gt;</code><br/>
+<code>#include &lt;fstream&gt;</code><br/>
+<code>#include &lt;sstream&gt;</code><br/>
+</div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:aa8517c5c4bb542ebf4af42d59d76f236"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8517c5c4bb542ebf4af42d59d76f236"></a>
+typedef void *(*&#160;</td><td class="memItemRight" valign="bottom"><b>trainThetaMatrix</b> )(void *)</td></tr>
+<tr class="separator:aa8517c5c4bb542ebf4af42d59d76f236"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74091bc41f02fb5f638d1b99050beeb6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74091bc41f02fb5f638d1b99050beeb6"></a>
+typedef unsigned int(*&#160;</td><td class="memItemRight" valign="bottom"><b>predictUsingThetaMatrix</b> )(float *, float *, float *, int, int)</td></tr>
+<tr class="separator:a74091bc41f02fb5f638d1b99050beeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aad196b73c2b3cd852fddbe14e64b0f4b"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aad196b73c2b3cd852fddbe14e64b0f4b"><td class="memTemplItemLeft" align="right" valign="top">T *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="main_8cpp.html#aad196b73c2b3cd852fddbe14e64b0f4b">convertArmadilloMatrixToNormalArray</a> (fmat matrix)</td></tr>
+<tr class="separator:aad196b73c2b3cd852fddbe14e64b0f4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0f2228420376f4db7e1274f2b41667c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="main_8cpp.html#ac0f2228420376f4db7e1274f2b41667c">main</a> (int argc, const char *argv[])</td></tr>
+<tr class="separator:ac0f2228420376f4db7e1274f2b41667c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>It is a class which handles all of calculations. This class uses Armadillo library to make linear algebra calculations. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a8ad5aa7fd468ab871c422b2f84d02c88"></a>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="aad196b73c2b3cd852fddbe14e64b0f4b"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int MultiClassClassificator::predictUsingThetaMatrix </td>
+          <td class="memname">T* convertArmadilloMatrixToNormalArray </td>
           <td>(</td>
           <td class="paramtype">fmat&#160;</td>
-          <td class="paramname"><em>allTheta</em>, </td>
+          <td class="paramname"><em>matrix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Converts armadillo matrix to normal c Matrix. It is mainly used for passing c array to assembler. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">matrix</td><td>armadillo matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>pointer to c array </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac0f2228420376f4db7e1274f2b41667c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int main </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">fmat&#160;</td>
-          <td class="paramname"><em>X</em>&#160;</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>argv</em>[]&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -124,62 +166,19 @@ Static Public Member Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
-<p>This method return prediction for given trained matrix </p>
+<p>Main Function </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">allTheta</td><td>Trained theta Matrix it should be of size: MxN </td></tr>
-    <tr><td class="paramname">X</td><td>matrix it should be of size: 1xN </td></tr>
+    <tr><td class="paramname">argc</td><td>arg count </td></tr>
+    <tr><td class="paramname">argv</td><td>as a first argument please give name of file to classificate. I.e. digits/1338.pgm </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>prediction - which class is the most predictable </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
-<a class="anchor" id="a4eda8cb5f03c85a12864b1d1eef59ff1"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void * MultiClassClassificator::trainThetaMatrix </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>args</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>trainThetaMatrix is ready for running on two cores, this is the reason why to param you should pass one parameter</p>
-<ul>
-<li>pointer to structure.</li>
-</ul>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">args</td><td>is an struct of type TrainArgs. Look at <a class="el" href="_common_8h_source.html">Common.h</a> </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/<a class="el" href="_multi_class_classificator_8h_source.html">MultiClassClassificator.h</a></li>
-<li>src/MultiClassClassificator.cpp</li>
-</ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
